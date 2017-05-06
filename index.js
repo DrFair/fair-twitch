@@ -2,55 +2,72 @@ var request = require('request');
 var chat = require('./chat');
 
 exports.TwitchClient = TwitchClient;
+exports.TwitchBot = chat.TwitchBot;
 
-function TwitchClient(apiOptions, chatOptions, channels) {
+function TwitchClient(options, channels) {
     var self = this;
 
     self.userID = null;
+    self.login = null;
+    
+    if (typeof(options) == 'string') {
+        options = {
+            clientID: options
+        }
+    }
 
     self.options = {
         apiURL: 'https://api.twitch.tv/kraken',
-        headers: {
-            'Accept': 'application/vnd.twitchtv.v5+json',
-            'Client-ID': apiOptions.clientID
-        },
-        clientID: apiOptions.clientID,
-        secret: apiOptions.secret,
-        redirect_uri: apiOptions.redirect_uri
+        clientID: null,
+        secret: null,
+        redirect_uri: null,
+        login: null,
+        token: null
     };
-    if (chatOptions) {
-        self.options.headers['Authorization'] = 'OAuth ' + chatOptions.token;
+
+    self.setOptions(options);
+    
+    if (typeof(self.options.clientID) !== 'string') {
+        throw new Error('Invalid clientID');
     }
 
-    self.setOptions(apiOptions);
-
     // Used to store callbacks of when user id is retrieved
-    self.userIDCallbacks = [];
+    self.onReadyCallbacks = [];
 
     self.chat = null;
 
-    // Chat parts
-    if (chatOptions) {
-        self.getChannelIDByName(chatOptions.login, function (err, id) {
+    if (self.options.token) {
+        self.getAuthSummary(function (err, json) {
             if (err) {
+                console.log('Error on auth token ' + self.token);
                 return;
             }
-            self.userID = id;
-            for (var i in self.userIDCallbacks) {
-                self.userIDCallbacks[i]();
+            if (json.token) {
+                self.userID = json.token['user_id'];
+                self.options.login = json.token['user_name'];
+                self.login = self.options.login;
+                self.options.scopes = json.token['authorization']['scopes'];
+                self.chat = new chat.TwitchBot(self.options, channels);
+                
+                for (var i in self.onReadyCallbacks) {
+                    self.onReadyCallbacks[i]();
+                }
             }
         });
-
-        self.chat = new chat.TwitchBot(chatOptions, channels);
     }
 }
 
 TwitchClient.prototype.setOptions = function (options) {
     for (var i in options){
-        if (this.options[i] != undefined){ // Only override if the passed in value is actually defined
+        if (this.options[i] !== undefined){ // Only override if the passed in value is actually defined
             this.options[i] = options[i];
         }
     }
+};
+
+// Used to store event triggers for when user id is retrieved
+TwitchClient.prototype.onChatReady = function (callback) {
+    this.onReadyCallbacks.push(callback);
 };
 
 // HTTP Request parts
@@ -71,7 +88,11 @@ TwitchClient.prototype.rawPost = function (options, callback) {
 TwitchClient.prototype.request = function (apicall, callback, replacementAuth) {
     var options = {
         url: this.options.apiURL + apicall,
-        headers: this.options.headers
+        headers: {
+            'Accept': 'application/vnd.twitchtv.v5+json',
+            'Client-ID': this.options.clientID,
+            'Authorization': 'OAuth ' + this.options.token
+        }
     };
     if (replacementAuth) {
         options.headers['Authorization'] = 'OAuth ' + replacementAuth;
@@ -98,7 +119,11 @@ TwitchClient.prototype.request = function (apicall, callback, replacementAuth) {
 TwitchClient.prototype.put = function (apicall, callback) {
     var options = {
         url: this.options.apiURL + apicall,
-        headers: this.options.headers
+        headers: {
+            'Accept': 'application/vnd.twitchtv.v5+json',
+            'Client-ID': this.options.clientID,
+            'Authorization': 'OAuth ' + this.options.token
+        }
     };
     this.rawPut(options, function (err, response, body) {
         if (err) {
@@ -122,7 +147,11 @@ TwitchClient.prototype.put = function (apicall, callback) {
 TwitchClient.prototype.post = function (apicall, postData, callback) {
     var options = {
         url: this.options.apiURL + apicall,
-        headers: this.options.headers,
+        headers: {
+            'Accept': 'application/vnd.twitchtv.v5+json',
+            'Client-ID': this.options.clientID,
+            'Authorization': 'OAuth ' + this.options.token
+        },
         formData: postData
     };
     this.rawPost(options, function (err, response, body) {
@@ -346,11 +375,4 @@ TwitchClient.prototype.getFollowed = function (callback) {
         });
     }
 };
-
-// Used to all event triggers for when user id is retrieved
-TwitchClient.prototype.onUserID = function (callback) {
-    this.userIDCallbacks.push(callback);
-};
-
-// Chat part
 
