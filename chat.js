@@ -9,8 +9,8 @@ function TwitchBot(options, channels) {
     self.options = {
         ircURL: 'irc.chat.twitch.tv',
         ircPort: 6667,
-        login: options.login,
-        token: options.token
+        login: null,
+        token: null
     };
 
     self.setOptions(options);
@@ -31,7 +31,7 @@ function TwitchBot(options, channels) {
 
     self.channels = channels;
 
-    self.irc = new irc.Client(self.options.apiURL, self.options.login, {
+    self.irc = new irc.Client(self.options.ircURL, self.options.login, {
         port: self.options.ircPort,
         password: 'oauth:' + self.options.token,
         channels: self.channels
@@ -45,7 +45,7 @@ function TwitchBot(options, channels) {
 
 TwitchBot.prototype.setOptions = function (options) {
     for (var i in options){
-        if (this.options[i] != undefined){ // Only override if the passed in value is actually defined
+        if (this.options[i] !== undefined){ // Only override if the passed in value is actually defined
             this.options[i] = options[i];
         }
     }
