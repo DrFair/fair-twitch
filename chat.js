@@ -54,6 +54,10 @@ TwitchBot.prototype.setOptions = function (options) {
 // Callback: err
 TwitchBot.prototype.onError = function (callback) {
     this.irc.addListener('error', function (err) {
+        // Twitch can't handle WHOIS requests, but there's no way to disable those in node-irc
+        if (err['rawCommand'] === '421' && err['args'] && err['args'][1] === 'WHOIS') {
+            return;
+        }
         callback(err);
     });
     this.errorListeners.push(callback);
