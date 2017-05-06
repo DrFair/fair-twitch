@@ -1,0 +1,12 @@
+{
+  "name": "fair-twitch",
+  "version": "1.0.0",
+  "description": "Fair's Twitch API and Chat bot library",
+  "main": "index.js",
+  "author": "Mads Skovgaard <madsskovgaard@hotmail.com>",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "irc": "^0.5.2",
+    "request": "^2.81.0"
+  }
+}
