@@ -84,7 +84,7 @@ TwitchClient.prototype.rawPost = function (options, callback) {
     request.post(options, callback);
 };
 
-// Callback: err, json
+// Callback: err, data
 TwitchClient.prototype.request = function (apicall, callback, replacementAuth) {
     var options = {
         url: this.options.apiURL + apicall,
@@ -115,7 +115,7 @@ TwitchClient.prototype.request = function (apicall, callback, replacementAuth) {
     });
 };
 
-// Callback: err, json
+// Callback: err, data
 TwitchClient.prototype.put = function (apicall, callback) {
     var options = {
         url: this.options.apiURL + apicall,
@@ -143,7 +143,7 @@ TwitchClient.prototype.put = function (apicall, callback) {
     });
 };
 
-// Callback: err, json
+// Callback: err, data
 TwitchClient.prototype.post = function (apicall, postData, callback) {
     var options = {
         url: this.options.apiURL + apicall,
@@ -160,11 +160,11 @@ TwitchClient.prototype.post = function (apicall, postData, callback) {
             return;
         }
         try { // Sometimes JSON.parse gives token error?
-            var json = JSON.parse(body);
-            if (json['error']) { // Handles twitch error body
-                callback(json['status'] + ' - ' + json['error'] + ': ' + json['message']);
+            var data = JSON.parse(body);
+            if (data['error']) { // Handles twitch error body
+                callback(data['status'] + ' - ' + data['error'] + ': ' + data['message']);
             } else {
-                callback(null, json);
+                callback(null, data);
             }
         } catch(e) {
             callback(e);
@@ -182,58 +182,58 @@ TwitchClient.prototype.getAuthToken = function (code, state, callback) {
         code: code,
         state: state
     };
-    this.post('/oauth2/token', postData, function (err, json) {
+    this.post('/oauth2/token', postData, function (err, data) {
         if (err) {
             console.log('Get auth token error:');
             console.log(err);
             return;
         }
-        callback(json);
+        callback(data);
     });
 };
 
-// Callback: err, json
+// Callback: err, data
 TwitchClient.prototype.getOtherAuthSummary = function (auth, callback) {
-    this.request('/', function (err, json) {
+    this.request('/', function (err, data) {
         if (err) {
             callback(err);
             return;
         }
-        callback(null, json);
+        callback(null, data);
     }, auth);
 };
 
-// Callback: err, json
+// Callback: err, data
 TwitchClient.prototype.getAuthSummary = function (callback) {
-    this.request('/', function (err, json) {
+    this.request('/', function (err, data) {
         if (err) {
             callback(err);
             return;
         }
-        callback(null, json);
+        callback(null, data);
     });
 };
 
-// Callback: err, json
+// Callback: err, data
 TwitchClient.prototype.getChannelByID = function (channelID, callback) {
-    this.request('/channels/' + channelID, function (err, json) {
+    this.request('/channels/' + channelID, function (err, data) {
         if (err) {
             callback(err);
             return;
         }
-        callback(null, json);
+        callback(null, data);
     });
 };
 
 // Callback: err, channelID
 TwitchClient.prototype.getChannelIDByName = function (channelName, callback) {
-    this.request('/users?login=' + channelName, function (err, json) {
+    this.request('/users?login=' + channelName, function (err, data) {
         if (err) {
             callback(err);
             return;
         }
-        if (json.users && json.users[0] != undefined) {
-            callback(null, json.users[0]._id);
+        if (data.users && data.users[0] != undefined) {
+            callback(null, data.users[0]['_id']);
             return;
         }
         callback(null, null);
@@ -242,13 +242,13 @@ TwitchClient.prototype.getChannelIDByName = function (channelName, callback) {
 
 // Callback: err, channel
 TwitchClient.prototype.getChannelByName = function (channelName, callback) {
-    this.request('/users?login=' + channelName, function (err, json) {
+    this.request('/users?login=' + channelName, function (err, data) {
         if (err) {
             callback(err);
             return;
         }
-        if (json.users && json.users[0] != undefined) {
-            callback(null, json.users[0]);
+        if (data.users && data.users[0] != undefined) {
+            callback(null, data.users[0]);
             return;
         }
         callback('Could not find login by name ' + channelName);
@@ -274,14 +274,14 @@ TwitchClient.prototype.findVideoByStreamID = function (channelID, streamID, call
     request(callback);
 
     function request(callback) {
-        self.request('/channels/' + channelID + '/videos?broadcasts=true&limit=' + limit + '&offset=' + offset, function (err, json) {
+        self.request('/channels/' + channelID + '/videos?broadcasts=true&limit=' + limit + '&offset=' + offset, function (err, data) {
             if (err) {
                 callback(err);
                 return;
             }
-            if (json.videos) {
-                for (var i = 0; i < json.videos.length; i++) {
-                    var video = json.videos[i];
+            if (data.videos) {
+                for (var i = 0; i < data.videos.length; i++) {
+                    var video = data.videos[i];
                     if (video.broadcast_type === 'archive') { // Only search for past broadcasts
                         if (String(video.broadcast_id) === String(streamID)) { // I am lazy
                             callback(null, video);
@@ -298,24 +298,24 @@ TwitchClient.prototype.findVideoByStreamID = function (channelID, streamID, call
 
 // Callback: err, video
 TwitchClient.prototype.getVideo = function (videoID, callback) {
-    this.request('/videos/' + videoID, function (err, json) {
+    this.request('/videos/' + videoID, function (err, data) {
         if (err) {
             callback(err);
             return;
         }
-        callback(err, json);
+        callback(err, data);
     });
 };
 
 // Callback: err, stream
 TwitchClient.prototype.getChannelStream = function(channelID, callback) {
-    this.request('/streams/' + channelID, function (err, json) {
+    this.request('/streams/' + channelID, function (err, data) {
         if (err) {
             callback(err);
             return;
         }
-        if (json.stream) {
-            callback(null, json.stream);
+        if (data.stream) {
+            callback(null, data.stream);
         } else {
             callback('Invalid stream server response');
         }
@@ -357,14 +357,14 @@ TwitchClient.prototype.getFollowed = function (callback) {
     request(callback);
 
     function request(callback) {
-        self.request('/users/' + self.userID + '/follows/channels?limit=' + limit + '&offset=' + offset, function (err, json) {
+        self.request('/users/' + self.userID + '/follows/channels?limit=' + limit + '&offset=' + offset, function (err, data) {
             if (err) {
                 callback(err);
                 return;
             }
-            var done = json['_total'] <= limit + offset;
-            for (let i = 0; i < json.follows.length; i++) {
-                out.push(json.follows[i]);
+            var done = data['_total'] <= limit + offset;
+            for (let i = 0; i < data.follows.length; i++) {
+                out.push(data.follows[i]);
             }
             offset += limit;
             if (!done) {
