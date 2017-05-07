@@ -140,7 +140,7 @@ TwitchBot.prototype.listenSubs = function (callback) {
 };
 
 // Callback is: user
-TwitchBot.prototype.listenChat = function (callback) {
+TwitchBot.prototype.listen = function (callback) {
     this.listenTwitchTag('PRIVMSG', function (args, tags) {
         var user = parser.createUser(args, tags);
         callback(user);
@@ -148,17 +148,17 @@ TwitchBot.prototype.listenChat = function (callback) {
 };
 
 // Callback is: user
-TwitchBot.prototype.listenChatCommand = function (command, callback) {
-    this.listenChat(function (user) {
-        if (user.msg.lastIndexOf(command, 0) === 0) { // Starts with command
+TwitchBot.prototype.listenCommand = function (command, callback) {
+    this.listen(function (user) {
+        if (user.msg.lastIndexOf(command.toLowerCase(), 0) === 0) { // Starts with command
             callback(user);
         }
     });
 };
 
 // Callback is: user
-TwitchBot.prototype.listenChatMsg = function (msg, callback) {
-    this.listenChat(function (user) {
+TwitchBot.prototype.listenMsg = function (msg, callback) {
+    this.listen(function (user) {
         if (user.msg.toLowerCase().indexOf(msg.toLowerCase()) !== -1) {
             callback(user);
         }
@@ -178,10 +178,12 @@ TwitchBot.prototype.msg = function (channel, message) {
     this.irc.send('PRIVMSG ' + channel, message)
 };
 
-// User has to be exact display name
+// For some reason, whispering does not work atm, use msg with /w
+// User has to be username of receiver
 TwitchBot.prototype.whisper = function (user, message) {
     if (typeof(user) !== 'string') {
-        user = user.display_name;
+        if (user.login) user = user.login;
+        else user = user.display_name; // Sometimes, all Twitch sends is the display name
         if (typeof(user) !== 'string') {
             submitError(this.errorListeners, 'Invalid user to whisper to');
             return;
@@ -191,5 +193,5 @@ TwitchBot.prototype.whisper = function (user, message) {
         submitError(this.errorListeners, 'Cannot whisper when not joined a channel');
         return;
     }
-    this.irc.send('PRIVMSG ' + this.channels[0], '/w ' + user + ' ' + message)
+    this.msg(this.channels[0], '/w ' + user + ' ' + message);
 };
