@@ -68,7 +68,7 @@ client.put('<API call>', function (err, data) {
 });
 
 // For POST methods:
-client.post('<API call>', function (err, data) {
+client.post('<API call>'[, postData], function (err, data) {
     // Handle error and data
 });
 
