@@ -72,6 +72,14 @@ TwitchClient.prototype.onChatReady = function (callback) {
 
 // HTTP Request parts
 
+TwitchClient.prototype.getRequestHeaders = function () {
+    return {
+        'Accept': 'application/vnd.twitchtv.v5+json',
+        'Client-ID': this.options.clientID,
+        'Authorization': 'OAuth ' + this.options.token
+    };
+};
+
 TwitchClient.prototype.rawRequest = function(options, callback) {
     request(options, callback);
 };
@@ -84,15 +92,15 @@ TwitchClient.prototype.rawPost = function (options, callback) {
     request.post(options, callback);
 };
 
+TwitchClient.prototype.rawDelete = function (options, callback) {
+    request.post(options, callback);
+};
+
 // Callback: err, data
 TwitchClient.prototype.request = function (apicall, callback, replacementAuth) {
     var options = {
         url: this.options.apiURL + apicall,
-        headers: {
-            'Accept': 'application/vnd.twitchtv.v5+json',
-            'Client-ID': this.options.clientID,
-            'Authorization': 'OAuth ' + this.options.token
-        }
+        headers: this.getRequestHeaders()
     };
     if (replacementAuth) {
         options.headers['Authorization'] = 'OAuth ' + replacementAuth;
@@ -119,11 +127,7 @@ TwitchClient.prototype.request = function (apicall, callback, replacementAuth) {
 TwitchClient.prototype.put = function (apicall, callback) {
     var options = {
         url: this.options.apiURL + apicall,
-        headers: {
-            'Accept': 'application/vnd.twitchtv.v5+json',
-            'Client-ID': this.options.clientID,
-            'Authorization': 'OAuth ' + this.options.token
-        }
+        headers: this.getRequestHeaders()
     };
     this.rawPut(options, function (err, response, body) {
         if (err) {
@@ -147,14 +151,34 @@ TwitchClient.prototype.put = function (apicall, callback) {
 TwitchClient.prototype.post = function (apicall, postData, callback) {
     var options = {
         url: this.options.apiURL + apicall,
-        headers: {
-            'Accept': 'application/vnd.twitchtv.v5+json',
-            'Client-ID': this.options.clientID,
-            'Authorization': 'OAuth ' + this.options.token
-        },
+        headers: this.getRequestHeaders(),
         formData: postData
     };
     this.rawPost(options, function (err, response, body) {
+        if (err) {
+            callback(err);
+            return;
+        }
+        try { // Sometimes JSON.parse gives token error?
+            var data = JSON.parse(body);
+            if (data['error']) { // Handles twitch error body
+                callback(data['status'] + ' - ' + data['error'] + ': ' + data['message']);
+            } else {
+                callback(null, data);
+            }
+        } catch(e) {
+            callback(e);
+        }
+    });
+};
+
+// Callback: err, data
+TwitchClient.prototype.delete = function (apicall, postData, callback) {
+    var options = {
+        url: this.options.apiURL + apicall,
+        headers: this.getRequestHeaders()
+    };
+    this.rawDelete(options, function (err, response, body) {
         if (err) {
             callback(err);
             return;
