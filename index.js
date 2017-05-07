@@ -197,6 +197,7 @@ TwitchClient.prototype.delete = function (apicall, postData, callback) {
 };
 
 // This requires secret and redirect uri in twitch app
+// Callback: err, data
 TwitchClient.prototype.getAuthToken = function (code, state, callback) {
     var postData = {
         client_id: this.options.clientID,
@@ -208,11 +209,10 @@ TwitchClient.prototype.getAuthToken = function (code, state, callback) {
     };
     this.post('/oauth2/token', postData, function (err, data) {
         if (err) {
-            console.log('Get auth token error:');
-            console.log(err);
+            callback(err);
             return;
         }
-        callback(data);
+        callback(null, data);
     });
 };
 
