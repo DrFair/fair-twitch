@@ -1,11 +1,14 @@
 exports.createUser = function(args, tags) {
-    let user = {};
+    var user = {};
 
-    let argsSplit = args[0].split(':');
+    var loginSplit = args[0].split('!');
+    user.login = loginSplit[0];
+
+    var argsSplit = args[0].split(':');
     if (argsSplit.length > 1) user.msg = argsSplit[1];
     else user.msg = '';
 
-    let channelSplit = argsSplit[0].split(' ');
+    var channelSplit = argsSplit[0].split(' ');
     if (channelSplit.length > 2) user.channel = channelSplit[2];
     if (user.channel && user.channel.charAt(0) === '#') user.channel = user.channel.substr(1);
 
