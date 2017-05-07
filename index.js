@@ -151,9 +151,14 @@ TwitchClient.prototype.put = function (apicall, callback) {
 TwitchClient.prototype.post = function (apicall, postData, callback) {
     var options = {
         url: this.options.apiURL + apicall,
-        headers: this.getRequestHeaders(),
-        formData: postData
+        headers: this.getRequestHeaders()
     };
+    if (typeof postData === 'function') {
+        callback = postData;
+        console.log('Ah yea')
+    } else {
+        options.formData = postData;
+    }
     this.rawPost(options, function (err, response, body) {
         if (err) {
             callback(err);
@@ -173,7 +178,7 @@ TwitchClient.prototype.post = function (apicall, postData, callback) {
 };
 
 // Callback: err, data
-TwitchClient.prototype.delete = function (apicall, postData, callback) {
+TwitchClient.prototype.delete = function (apicall, callback) {
     var options = {
         url: this.options.apiURL + apicall,
         headers: this.getRequestHeaders()
