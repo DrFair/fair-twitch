@@ -81,7 +81,7 @@ TwitchBot.prototype.joinChannel = function (channel) {
     if (!channel.charAt(0) !== '#') channel = '#' + channel;
     if (!this.isInChannel(channel)) {
         this.irc.join(channel);
-        channels.push(channel);
+        this.channels.push(channel);
     }
 };
 
