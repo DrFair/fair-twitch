@@ -6,7 +6,9 @@ Note: This was made for personal use, so it probably won't be supported that muc
 
 Install via npm:
 
-Coming soon
+```
+npm install fair-twitch
+```
 
 ## Basic setup
 
