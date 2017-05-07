@@ -1,6 +1,6 @@
 {
   "name": "fair-twitch",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Fair's Twitch API and Chat bot library",
   "main": "index.js",
   "author": "Mads Skovgaard <madsskovgaard@hotmail.com>",
