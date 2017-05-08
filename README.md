@@ -106,12 +106,12 @@ client.chat.leaveChannel('twitch');
 Listen for a room change (slow mode, subscribers only mode etc.):
 
 ```
-client.chat.onRoomChange('<channel>', function (state, firstJoin) {
+client.chat.onRoomChange(['<channel>',] function (state, firstJoin) {
     // Do stuff
 });
 ```
 
-Note: firstJoin parameter will be true if you just joined the room, else false. So this can also be used to trigger a channel join event.
+Note: firstJoin parameter only be defined if channel is and be true if you just joined the room, else false. So this can also be used to trigger a channel join event.
 
 Listen for all chat messages:
 
