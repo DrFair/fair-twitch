@@ -78,10 +78,10 @@ client.delete('<API call>', function (err, data) {
 });
 ```
 
-Before doing chat commands, you have to wait for it to login, this is done from an event like this:
+Before doing chat commands, you have to wait for it to successfully login, this is done from the onChatConnected event:
 
 ```
-client.onChatReady(function () {
+client.onChatConnected(function (user) {
     // Do stuff, add event listeners etc
 });
 ```
