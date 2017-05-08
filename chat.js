@@ -138,9 +138,17 @@ TwitchBot.prototype.leaveChannel = function (channel) {
 
 // Callback is roomState, isFirstJoin
 TwitchBot.prototype.onRoomChange = function (channel, callback) {
-    if (this.roomStateCallbacks[channel] == undefined) this.roomStateCallbacks[channel] = [];
-    if (callback != null) {
-        this.roomStateCallbacks[channel].push(callback);
+    if (typeof channel === 'function') {
+        callback = channel;
+        this.listenTwitchTag('ROOMSTATE', function (args, tags) {
+            var state = parser.createRoomState(args, tags);
+            callback(state);
+        });
+    } else {
+        if (this.roomStateCallbacks[channel] == undefined) this.roomStateCallbacks[channel] = [];
+        if (callback != null) {
+            this.roomStateCallbacks[channel].push(callback);
+        }
     }
 };
 
