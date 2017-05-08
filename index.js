@@ -357,17 +357,18 @@ TwitchClient.prototype.getChannelStream = function(channelID, callback) {
 
 // Callback: err
 TwitchClient.prototype.followChannel = function (channel, callback) {
+    var self = this;
     if (this.userID == null) {
         callback('User id not defined, use onUserID(callback)');
         return
     }
-    this.getChannelIDByName(channel, function (err, channelID) {
+    self.getChannelIDByName(channel, function (err, channelID) {
         if (err) {
             callback(err);
             return;
         }
         if (channelID != null) {
-            this.put('/users/' + this.userID + '/follows/channels/' + channelID, function (err) {
+            self.put('/users/' + self.userID + '/follows/channels/' + channelID, function (err) {
                 if (err) {
                     callback(err);
                 }
