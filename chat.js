@@ -117,7 +117,6 @@ TwitchBot.prototype.listenRaw = function (callback) {
 // Callback is: args, tags
 TwitchBot.prototype.listenTwitchTag = function (twitchTag, callback) {
     this.listenRaw(function (args, tags) {
-        if (err) return;
         if (args) {
             var argsSplit = args[0].split(' ');
             if (argsSplit.length > 1 && argsSplit[1] === twitchTag) {
