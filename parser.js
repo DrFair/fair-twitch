@@ -26,6 +26,11 @@ exports.createUser = function(args, tags) {
     if (tags['emotes']) user.emotes = tags['emotes'];
     if (tags['bits']) user.bits = tags['bits'];
     if (tags['message']) user.message = tags['message'];
+    
+    // Sometimes display name is not set, so make it login
+    if (user.display_name.length == '' && user.login) {
+        user.display_name = user.login;
+    }
 
     return user;
 };
