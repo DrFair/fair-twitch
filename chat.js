@@ -127,10 +127,7 @@ TwitchBot.prototype.isInChannel = function (channel) {
 // Callback is roomState, isFirstJoin
 TwitchBot.prototype.joinChannel = function (channel, roomChangeCallback) {
     this.irc.join('#' + channel);
-    if (this.roomStateCallbacks[channel] == undefined) this.roomStateCallbacks[channel] = [];
-    if (roomChangeCallback != null) {
-        this.roomStateCallbacks[channel].push(roomChangeCallback);
-    }
+    this.onRoomChange(roomChangeCallback);
 };
 
 TwitchBot.prototype.leaveChannel = function (channel) {
