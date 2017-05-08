@@ -34,3 +34,21 @@ exports.createUser = function(args, tags) {
 
     return user;
 };
+
+exports.createRoomState = function (args, tags) {
+    var room = {};
+
+    var argsSplit = args[0].split(' ');
+    room.channel = argsSplit[2];
+    if (room.channel.charAt(0) === '#') room.channel = room.channel.substr(1); // Clear # in beginning
+
+    room.room_id = tags['room-id']; // Should always be there
+    if (tags['broadcaster-lang']) room.broadcaster_lang = tags['broadcaster-lang'];
+    if (tags['emote-only']) room.emote_only = tags['emote-only'];
+    if (tags['followers-only']) room.followers_only = tags['followers-only'];
+    if (tags['r9k']) room.r9k = tags['r9k'];
+    if (tags['slow']) room.slow = tags['slow'];
+    if (tags['subs-only']) room.subs_only = tags['subs-only'];
+
+    return room;
+};

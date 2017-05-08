@@ -27,14 +27,13 @@ function TwitchBot(options, channels) {
         }
     }
     
+    // Used to store error listeners
     self.errorListeners = [];
-
-    self.channels = channels;
 
     self.irc = new irc.Client(self.options.ircURL, self.options.login, {
         port: self.options.ircPort,
         password: 'oauth:' + self.options.token,
-        channels: self.channels
+        channels: channels
     });
 
     // Request all additional information/messages from Twitch
@@ -63,6 +62,30 @@ function TwitchBot(options, channels) {
 
         for (var i in self.connectedCallbacks) {
             self.connectedCallbacks[i](self.user);
+        }
+    });
+
+    // Used to store channel states
+    self.channels = [];
+    // Used to store callbacks for when joining a channel
+    self.roomStateCallbacks = [];
+
+    self.listenTwitchTag('ROOMSTATE', function (args, tags) { // Getting this also indicates successful connection to room
+        var state = parser.createRoomState(args, tags);
+        var firstJoin;
+        if (self.channels[state.channel]) { // Already have state, override it
+            firstJoin = false;
+            for (var i in state){
+                self.channels[state.channel][i] = state[i];
+            }
+        } else {
+            firstJoin = true;
+            self.channels[state.channel] = state;
+        }
+        if (self.roomStateCallbacks[state.channel] !== undefined) {
+            for (var i in self.roomStateCallbacks[state.channel]) {
+                self.roomStateCallbacks[state.channel][i](self.channels[state.channel], firstJoin);
+            }
         }
     });
 }
@@ -98,29 +121,29 @@ TwitchBot.prototype.onConnected = function (callback) {
 };
 
 TwitchBot.prototype.isInChannel = function (channel) {
-    if (!channel.charAt(0) !== '#') channel = '#' + channel;
-    for (var i = 0; i < this.channels.length; i++) {
-        if (this.channels[i] === channel) return true;
-    }
-    return false;
+    return this.channels[channel] !== undefined;
 };
 
-TwitchBot.prototype.joinChannel = function (channel) {
-    if (!channel.charAt(0) !== '#') channel = '#' + channel;
-    if (!this.isInChannel(channel)) {
-        this.irc.join(channel);
-        this.channels.push(channel);
+// Callback is roomState, isFirstJoin
+TwitchBot.prototype.joinChannel = function (channel, roomChangeCallback) {
+    this.irc.join('#' + channel);
+    if (this.roomStateCallbacks[channel] == undefined) this.roomStateCallbacks[channel] = [];
+    if (roomChangeCallback != null) {
+        this.roomStateCallbacks[channel].push(roomChangeCallback);
     }
 };
 
 TwitchBot.prototype.leaveChannel = function (channel) {
-    if (!channel.charAt(0) !== '#') channel = '#' + channel;
-    for (var i = 0; i < this.channels.length; i++) {
-        if (this.channels[i] === channel) {
-            this.irc.part(channel);
-            this.channels.splice(i, 1);
-            return;
-        }
+    this.irc.part('#' + channel);
+    delete this.channels[channel];
+    delete this.roomStateCallbacks[channel];
+};
+
+// Callback is roomState, isFirstJoin
+TwitchBot.prototype.onRoomChange = function (channel, callback) {
+    if (this.roomStateCallbacks[channel] == undefined) this.roomStateCallbacks[channel] = [];
+    if (callback != null) {
+        this.roomStateCallbacks[channel].push(callback);
     }
 };
 
