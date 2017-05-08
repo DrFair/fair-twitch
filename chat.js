@@ -41,6 +41,30 @@ function TwitchBot(options, channels) {
     self.irc.send('CAP REQ', 'twitch.tv/membership');
     self.irc.send('CAP REQ', 'twitch.tv/tags');
     self.irc.send('CAP REQ', 'twitch.tv/commands');
+
+    // Used to store callbacks for when connection was successful
+    self.connectedCallbacks = [];
+
+    // Create generic global user
+    self.user = {
+        login: self.options.login,
+        display_name: self.options.login
+    };
+
+    self.listenTwitchTag('GLOBALUSERSTATE', function (args, tags) { // Getting this also indicates login was successful
+        if (tags['display-name'].length != 0) {
+            self.user.display_name = tags['display-name'];
+        }
+        self.user.id = tags['user-id'];
+        self.user.badges = tags['badges'];
+        self.user.color = tags['color'];
+        self.user.emote_sets = tags['emote-sets'];
+        self.user.type = tags['user-type'];
+
+        for (var i in self.connectedCallbacks) {
+            self.connectedCallbacks[i](self.user);
+        }
+    });
 }
 
 TwitchBot.prototype.setOptions = function (options) {
@@ -68,6 +92,10 @@ function submitError(errorListeners, error) {
         errorListeners[i](error);
     }
 }
+
+TwitchBot.prototype.onConnected = function (callback) {
+    this.connectedCallbacks.push(callback);
+};
 
 TwitchBot.prototype.isInChannel = function (channel) {
     if (!channel.charAt(0) !== '#') channel = '#' + channel;

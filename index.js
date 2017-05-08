@@ -31,15 +31,15 @@ function TwitchClient(options, channels) {
         throw new Error('Invalid clientID');
     }
 
-    // Used to store callbacks of when user id is retrieved
-    self.onReadyCallbacks = [];
+    // This is sent to chat once it's initialized
+    self.chatConnectedCallbacks = [];
 
     self.chat = null;
 
     if (self.options.token) {
         self.getAuthSummary(function (err, json) {
             if (err) {
-                console.log('Error on auth token ' + self.token);
+                console.log('Error on auth token ' + self.options.token);
                 return;
             }
             if (json.token) {
@@ -49,9 +49,10 @@ function TwitchClient(options, channels) {
                 self.options.scopes = json.token['authorization']['scopes'];
                 self.chat = new chat.TwitchBot(self.options, channels);
                 
-                for (var i in self.onReadyCallbacks) {
-                    self.onReadyCallbacks[i]();
+                for (var i in self.chatConnectedCallbacks) {
+                    self.chat.onConnected(self.chatConnectedCallbacks[i]);
                 }
+                delete self.chatConnectedCallbacks;
             }
         });
     }
@@ -65,9 +66,12 @@ TwitchClient.prototype.setOptions = function (options) {
     }
 };
 
-// Used to store event triggers for when user id is retrieved
-TwitchClient.prototype.onChatReady = function (callback) {
-    this.onReadyCallbacks.push(callback);
+TwitchClient.prototype.onChatConnected = function (callback) {
+    if (this.chat != null) {
+        this.chat.onConnected(callback);
+    } else {
+        this.chatConnectedCallbacks.push(callback);
+    }
 };
 
 // HTTP Request parts
