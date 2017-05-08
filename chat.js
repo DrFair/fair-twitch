@@ -101,7 +101,7 @@ TwitchBot.prototype.listenRaw = function (callback) {
     this.irc.addListener('raw', function (msg) {
         if (msg.commandType === 'normal') {
             if (msg.command.charAt(0) === '@') {
-                msg.command = msg.command.substring(1, msg.command.length);
+                msg.command = msg.command.substring(1);
             }
             var s = msg.command.split(';');
             var tags = {};
@@ -109,14 +109,14 @@ TwitchBot.prototype.listenRaw = function (callback) {
                 var split = s[i].split('=');
                 tags[split[0]] = split[1];
             }
-            callback(null, msg.args, tags);
+            callback(msg.args, tags);
         }
     });
 };
 
 // Callback is: args, tags
 TwitchBot.prototype.listenTwitchTag = function (twitchTag, callback) {
-    this.listenRaw(function (err, args, tags) {
+    this.listenRaw(function (args, tags) {
         if (err) return;
         if (args) {
             var argsSplit = args[0].split(' ');
