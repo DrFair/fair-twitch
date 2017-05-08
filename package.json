@@ -5,6 +5,23 @@
   "main": "index.js",
   "author": "Mads Skovgaard <madsskovgaard@hotmail.com>",
   "license": "GPL-3.0",
+  "keywords": [
+    "twitch",
+    "twitchtv",
+    "twitch.tv",
+    "stream",
+    "twitchapi",
+    "twitch-api",
+    "api",
+    "authentication",
+    "chatbot",
+    "bot",
+    "chat",
+    "subscriber"
+  ],
+  "bugs": {
+    "url": "https://github.com/DrFair/fair-twitch/issues"
+  },
   "dependencies": {
     "irc": "^0.5.2",
     "request": "^2.81.0"
