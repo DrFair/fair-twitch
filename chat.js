@@ -203,18 +203,22 @@ TwitchBot.prototype.listen = function (callback) {
 };
 
 // Callback is: user
-TwitchBot.prototype.listenCommand = function (command, callback) {
+TwitchBot.prototype.listenCommand = function (command, callback, caseSensitive) {
+    if (!caseSensitive) command = command.toLowerCase();
     this.listen(function (user) {
-        if (user.msg.lastIndexOf(command.toLowerCase(), 0) === 0) { // Starts with command
+        if (!caseSensitive) user.msg = user.msg.toLowerCase();
+        if (user.msg.lastIndexOf(command, 0) === 0) { // Starts with command
             callback(user);
         }
     });
 };
 
 // Callback is: user
-TwitchBot.prototype.listenMsg = function (msg, callback) {
+TwitchBot.prototype.listenMsg = function (msg, callback, caseSensitive) {
+    if (!caseSensitive) msg = msg.toLowerCase();
     this.listen(function (user) {
-        if (user.msg.toLowerCase().indexOf(msg.toLowerCase()) !== -1) {
+        if (!caseSensitive) user.msg = user.msg.toLowerCase();
+        if (user.msg.indexOf(msg) !== -1) {
             callback(user);
         }
     });
