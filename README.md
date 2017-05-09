@@ -111,7 +111,7 @@ client.chat.onRoomChange(['<channel>',] function (state, firstJoin) {
 });
 ```
 
-Note: firstJoin parameter only be defined if channel is and be true if you just joined the room, else false. So this can also be used to trigger a channel join event.
+Note: firstJoin callback is only defined if channel parameter is and be true if you just joined the room, else false. So this can also be used to trigger a channel join event.
 
 Listen for all chat messages:
 
