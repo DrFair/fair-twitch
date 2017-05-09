@@ -134,7 +134,7 @@ Listen for specific chat commands:
 ```
 client.chat.listenCommand('!help', function (user) {
     // Handle chat message that starts with !help
-});
+}[, caseSensitive]);
 ```
 
 Listen for chat message:
@@ -142,7 +142,7 @@ Listen for chat message:
 ```
 client.chat.listenMsg('Kappa', function (user) {
     // Handle chat message that contains kappa
-});
+}[, caseSensitive]);
 ```
 
 Listen for whispers to you:
