@@ -5,7 +5,7 @@ exports.createUser = function(args, tags) {
     user.login = loginSplit[0];
 
     var argsSplit = args[0].split(':');
-    if (argsSplit.length > 1) user.msg = argsSplit[1];
+    if (argsSplit.length > 1) user.msg = argsSplit.slice(1).join(":");
     else user.msg = '';
 
     var channelSplit = argsSplit[0].split(' ');
@@ -26,7 +26,7 @@ exports.createUser = function(args, tags) {
     if (tags['emotes']) user.emotes = tags['emotes'];
     if (tags['bits']) user.bits = tags['bits'];
     if (tags['message']) user.message = tags['message'];
-    
+
     // Sometimes display name is not set, so make it login
     if (user.display_name.length == '' && user.login) {
         user.display_name = user.login;

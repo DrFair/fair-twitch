@@ -26,7 +26,7 @@ function TwitchBot(options, channels) {
             channels[i] = '#' + channels[i];
         }
     }
-    
+
     // Used to store error listeners
     self.errorListeners = [];
 
