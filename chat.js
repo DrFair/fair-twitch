@@ -15,6 +15,17 @@ function TwitchBot(options, channels) {
 
     self.setOptions(options);
 
+    self.anonymous = false;
+    if (self.options.login == null) { // Generate an anonymous twitch login, if not given
+        var login = 'justinfan';
+        for (var i = 0; i < 5; i++) {
+          var num = Math.floor(Math.random() * 10);
+          login += num;
+        }
+        self.options.login = login;
+        self.anonymous = true;
+    }
+
     // Manage channels parameter
     if (channels == null) channels = [];
 
@@ -30,11 +41,15 @@ function TwitchBot(options, channels) {
     // Used to store error listeners
     self.errorListeners = [];
 
-    self.irc = new irc.Client(self.options.ircURL, self.options.login, {
+    var loginOptions = {
         port: self.options.ircPort,
-        password: 'oauth:' + self.options.token,
         channels: channels
-    });
+    };
+    if (self.options.token) {
+        loginOptions.password = 'oauth:' + self.options.token;
+    }
+
+    self.irc = new irc.Client(self.options.ircURL, self.options.login, loginOptions);
 
     // Request all additional information/messages from Twitch
     self.irc.send('CAP REQ', 'twitch.tv/membership');
@@ -64,6 +79,17 @@ function TwitchBot(options, channels) {
             self.connectedCallbacks[i](self.user);
         }
     });
+    if (self.anonymous) {
+        var joined = false;
+        self.listenRaw(function (args, tags) { // Listen to any event for joined
+            if (!joined) {
+              joined = true;
+              for (var i in self.connectedCallbacks) {
+                  self.connectedCallbacks[i](self.user);
+              }
+            }
+        });
+    }
 
     // Used to store channel states
     self.channels = [];
