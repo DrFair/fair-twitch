@@ -213,7 +213,7 @@ TwitchBot.prototype.listenSubs = function (callback) {
     this.listenTwitchTag('USERNOTICE', function (args, tags) {
         var user = parser.createUser(args, tags);
         if (tags['msg-id'] == 'sub') {
-            callback(user, 0, tags['msg-param-sub-plan']);
+            callback(user, 1, tags['msg-param-sub-plan']);
         } else if (tags['msg-id'] == 'resub') {
             callback(user, Number(tags['msg-param-months']), tags['msg-param-sub-plan']);
         }
