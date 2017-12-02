@@ -23,7 +23,7 @@ function TwitchClient(options, channels) {
         redirect_uri: null,
         login: null,
         token: null,
-        chat: true // wether or not to try and connect to chat if scope is available
+        chat: true // whether or not to try and connect to chat if scope is available
     };
 
     self.setOptions(options);
