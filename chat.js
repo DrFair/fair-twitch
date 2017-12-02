@@ -56,6 +56,15 @@ function TwitchBot(options, channels) {
     self.irc.send('CAP REQ', 'twitch.tv/tags');
     self.irc.send('CAP REQ', 'twitch.tv/commands');
 
+
+    self.irc.addListener('error', function (err) {
+        // Twitch can't handle WHOIS requests, but there's no way to disable those in node-irc
+        if (err['rawCommand'] === '421' && err['args'] && err['args'][1] === 'WHOIS') {
+            return;
+        }
+        submitError(self.errorListeners, err);
+    });
+
     // Used to store callbacks for when connection was successful
     self.connectedCallbacks = [];
 
@@ -126,13 +135,6 @@ TwitchBot.prototype.setOptions = function (options) {
 
 // Callback: err
 TwitchBot.prototype.onError = function (callback) {
-    this.irc.addListener('error', function (err) {
-        // Twitch can't handle WHOIS requests, but there's no way to disable those in node-irc
-        if (err['rawCommand'] === '421' && err['args'] && err['args'][1] === 'WHOIS') {
-            return;
-        }
-        callback(err);
-    });
     this.errorListeners.push(callback);
 };
 
