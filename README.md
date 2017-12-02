@@ -34,7 +34,7 @@ var client = new fairTwitch.TwitchClient({
 });
 ```
 
-Note that for chat to work, you need the authorization token to have chat_login scope. An OAuth token can be [generated here](https://twitchapps.com/tmi/) or you can do it with your own application by following [Twitch's authentication process](https://dev.twitch.tv/docs/v5/guides/authentication/).
+Note that for chat to work, you need the authorization token to have chat_login scope. An OAuth token can be [generated here](https://twitchapps.com/tmi/) or you can do it with your own application by following [Twitch's authentication process](https://dev.twitch.tv/docs/v5/guides/authentication/). If the token has the chat_login scope, but you don't want to use chat, you can pass the option ```chat: false``` in the client constructor.
 
 Example of an OAuth token is: ```'cfabdegwdoklmawdzdo98xt2fo512y'```
 
