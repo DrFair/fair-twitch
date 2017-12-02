@@ -95,6 +95,7 @@ client.chat.onError(function (err) {
     // Handle error
 });
 ```
+*Note that error handling always happens behind the scenes*
 
 Join and leave channels:
 
