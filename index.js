@@ -9,7 +9,7 @@ function TwitchClient(options, channels) {
 
     self.userID = null;
     self.login = null;
-    
+
     if (typeof(options) == 'string') {
         options = {
             clientID: options
@@ -26,7 +26,7 @@ function TwitchClient(options, channels) {
     };
 
     self.setOptions(options);
-    
+
     if (typeof(self.options.clientID) !== 'string') {
         throw new Error('Invalid clientID');
     }
@@ -42,15 +42,21 @@ function TwitchClient(options, channels) {
                 console.log('Error on auth token ' + self.options.token);
                 return;
             }
-            if (json.token) {
+            if (json.token && json.token.valid) {
                 self.userID = json.token['user_id'];
                 self.options.login = json.token['user_name'];
                 self.login = self.options.login;
                 self.options.scopes = json.token['authorization']['scopes'];
-                self.chat = new chat.TwitchBot(self.options, channels);
-                
-                for (var i in self.chatConnectedCallbacks) {
-                    self.chat.onConnected(self.chatConnectedCallbacks[i]);
+                // Search for chat login scope, and when found, start the chat api
+                for (var i = 0; i < self.options.scopes.length; i++) {
+                  if (self.options.scopes[i] == 'chat_login') {
+                    self.chat = new chat.TwitchBot(self.options, channels);
+
+                    for (var i in self.chatConnectedCallbacks) {
+                        self.chat.onConnected(self.chatConnectedCallbacks[i]);
+                    }
+                    break;
+                  }
                 }
                 delete self.chatConnectedCallbacks;
             }
@@ -409,4 +415,3 @@ TwitchClient.prototype.getFollowed = function (callback) {
         });
     }
 };
-
