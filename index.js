@@ -22,7 +22,8 @@ function TwitchClient(options, channels) {
         secret: null,
         redirect_uri: null,
         login: null,
-        token: null
+        token: null,
+        chat: true // wether or not to try and connect to chat if scope is available
     };
 
     self.setOptions(options);
@@ -47,15 +48,17 @@ function TwitchClient(options, channels) {
                 self.options.login = json.token['user_name'];
                 self.login = self.options.login;
                 self.options.scopes = json.token['authorization']['scopes'];
-                // Search for chat login scope, and when found, start the chat api
-                for (var i = 0; i < self.options.scopes.length; i++) {
-                  if (self.options.scopes[i] == 'chat_login') {
-                    self.chat = new chat.TwitchBot(self.options, channels);
+                if (self.options.chat) {
+                  // Search for chat login scope, and when found, start the chat api
+                  for (var i = 0; i < self.options.scopes.length; i++) {
+                    if (self.options.scopes[i] == 'chat_login') {
+                      self.chat = new chat.TwitchBot(self.options, channels);
 
-                    for (var i in self.chatConnectedCallbacks) {
-                        self.chat.onConnected(self.chatConnectedCallbacks[i]);
+                      for (var i in self.chatConnectedCallbacks) {
+                          self.chat.onConnected(self.chatConnectedCallbacks[i]);
+                      }
+                      break;
                     }
-                    break;
                   }
                 }
                 delete self.chatConnectedCallbacks;
