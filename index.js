@@ -123,7 +123,6 @@ TwitchClient.prototype.validate = function (token, callback) {
             }
             token = data.access_token;
             // self.options.token is updated automatically
-            console.log(self.options.token);
             return val();
         });
     } else {
