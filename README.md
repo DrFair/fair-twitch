@@ -14,7 +14,7 @@ npm install fair-twitch
 
 To use it you first need to register a Twitch developer application to get a client ID.
 
-You can do that on the [Twitch connections page](https://www.twitch.tv/settings/connections).
+You can do that on the [Twitch Developer Apps Dashboard](https://glass.twitch.tv/console/apps).
 
 When you have a client ID, you can start a simple API client like this:
 
@@ -30,17 +30,19 @@ var client = new fairTwitch.TwitchClient({
     clientID: '<Your Twitch client ID>',
     secret: '<Your Twitch secret>',
     redirect_uri: '<Your Twitch authorization redirect URI>',
-    token: '<Your account authorization token>'
+    token: '<Your account authorization token>',
+    refreshToken: '<Your account refresh token>'
 });
 ```
+If refreshToken is given but token is not, the client will automatically generate a new token.
 
-Note that for chat to work, you need the authorization token to have chat_login scope. An OAuth token can be [generated here](https://twitchapps.com/tmi/) or you can do it with your own application by following [Twitch's authentication process](https://dev.twitch.tv/docs/v5/guides/authentication/). If the token has the chat_login scope, but you don't want to use chat, you can pass the option ```chat: false``` in the client constructor.
+Note that for chat to work, you need the authorization token to have chat_login scope. An OAuth token can be [generated here](https://twitchapps.com/tmi/) or you can do it with your own application by following [Twitch's authentication process](https://dev.twitch.tv/docs/authentication). If the token has the chat_login scope, but you don't want to use chat, you can pass the option ```chat: false``` in the client constructor.
 
 Example of an OAuth token is: ```'cfabdegwdoklmawdzdo98xt2fo512y'```
 
 ## Basic usage
 
-All API calls can be found in the [official Twitch API Reference](https://dev.twitch.tv/docs/v5/guides/using-the-twitch-api/).
+All API calls can be found in the [official Twitch API Reference](https://dev.twitch.tv/docs/api/reference/).
 
 An example of how to get all streams summary:
 
@@ -54,7 +56,7 @@ client.request('/streams/summary', function (err, data) {
 });
 ```
 
-There's a bunch of built in API call functions that I did for personal use, but in general, just use these with the [Twitch API Reference](https://dev.twitch.tv/docs/v5/guides/using-the-twitch-api/) :
+There's a bunch of built in API call functions that I did for personal use, but in general, just use these with the [Twitch API Reference](https://dev.twitch.tv/docs/api/reference/) :
 
 ```
 // For GET methods:
@@ -76,6 +78,22 @@ client.post('<API call>'[, postData], function (err, data) {
 client.delete('<API call>', function (err, data) {
     // Handle error and data
 });
+```
+
+You can refresh the clients access token by calling (this will update clients token automatically, so you don't need to handle the data callback)
+
+```
+client.refreshToken(function (err, data) {
+    // Handle error and maybe data
+})
+```
+
+To validate a token you can call: (if token parameter is not given, it will use clients token given in options)
+
+```
+client.validate([token], function (err, data) {
+    // Handle error and data
+})
 ```
 
 Before doing chat commands, you have to wait for it to successfully login, this is done from the onChatConnected event:
