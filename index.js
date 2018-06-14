@@ -122,7 +122,8 @@ TwitchClient.prototype.validate = function (token, callback) {
                 return callback(err);
             }
             token = data.access_token;
-            self.options.token = data.access_token;
+            // self.options.token is updated automatically
+            console.log(self.options.token);
             return val();
         });
     } else {
@@ -289,7 +290,10 @@ TwitchClient.prototype.getAuthToken = function (code, callback) {
 // This requires clientID, secret, refreshToken in twitch app
 // Callback: err, data
 TwitchClient.prototype.refreshToken = function (refreshToken, callback) {
+  var self = this;
+  var thisClient = false;
   if (typeof(refreshToken) == 'function') {
+      thisClient = true;
       callback = refreshToken
       refreshToken = this.options.refreshToken;
   }
@@ -297,9 +301,9 @@ TwitchClient.prototype.refreshToken = function (refreshToken, callback) {
   options.url = 'https://id.twitch.tv/oauth2/token' +
       '?grant_type=refresh_token' +
       '&refresh_token=' + refreshToken +
-      '&client_id=' + this.options.clientID +
-      '&client_secret=' + this.options.secret;
-  this.rawPost(options, function (err, response, body) {
+      '&client_id=' + self.options.clientID +
+      '&client_secret=' + self.options.secret;
+  self.rawPost(options, function (err, response, body) {
       if (err) {
           callback(err);
           return;
@@ -309,6 +313,9 @@ TwitchClient.prototype.refreshToken = function (refreshToken, callback) {
           if (data['error']) { // Handles twitch error body
               callback(data['status'] + ' - ' + data['error'] + ': ' + data['message']);
           } else {
+              if (thisClient && data.access_token) {
+                  self.options.token = data.access_token;
+              }
               callback(null, data);
           }
       } catch(e) {
