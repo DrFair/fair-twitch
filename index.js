@@ -17,12 +17,13 @@ function TwitchClient(options, channels) {
     }
 
     self.options = {
-        apiURL: 'https://api.twitch.tv/kraken',
+        apiURL: 'https://api.twitch.tv/helix',
         clientID: null,
         secret: null,
         redirect_uri: null,
         login: null,
         token: null,
+        refreshToken: null,
         chat: true // whether or not to try and connect to chat if scope is available
     };
 
@@ -37,17 +38,17 @@ function TwitchClient(options, channels) {
 
     self.chat = null;
 
-    if (self.options.token) {
-        self.getAuthSummary(function (err, json) {
+    if (self.options.token || self.options.refreshToken) {
+        self.validate(function (err, json) {
             if (err) {
                 console.log('Error on auth token ' + self.options.token);
                 return;
             }
-            if (json.token && json.token.valid) {
-                self.userID = json.token['user_id'];
-                self.options.login = json.token['user_name'];
+            if (json.login) {
+                self.userID = json.user_id;
+                self.options.login = json.login;
                 self.login = self.options.login;
-                self.options.scopes = json.token['authorization']['scopes'];
+                self.options.scopes = json.scopes;
                 if (self.options.chat) {
                   // Search for chat login scope, and when found, start the chat api
                   for (var i = 0; i < self.options.scopes.length; i++) {
@@ -87,9 +88,8 @@ TwitchClient.prototype.onChatConnected = function (callback) {
 
 TwitchClient.prototype.getRequestHeaders = function () {
     return {
-        'Accept': 'application/vnd.twitchtv.v5+json',
         'Client-ID': this.options.clientID,
-        'Authorization': 'OAuth ' + this.options.token
+        'Authorization': 'Bearer ' + this.options.token
     };
 };
 
@@ -110,13 +110,58 @@ TwitchClient.prototype.rawDelete = function (options, callback) {
 };
 
 // Callback: err, data
+TwitchClient.prototype.validate = function (token, callback) {
+    var self = this;
+    if (typeof(token) == 'function') {
+        callback = token;
+        token = self.options.token;
+    }
+    if (self.options.refreshToken) {
+        self.refreshToken(function (err, data) {
+            if (err) {
+                return callback(err);
+            }
+            token = data.access_token;
+            self.options.token = data.access_token;
+            return val();
+        });
+    } else {
+        return val();
+    }
+    function val() {
+        var options = {
+          url: 'https://id.twitch.tv/oauth2/validate',
+          headers: {
+            'Authorization': 'OAuth ' + token
+          }
+        };
+        self.rawRequest(options, function (err, response, body) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            try { // Sometimes JSON.parse gives token error?
+                var json = JSON.parse(body);
+                if (json['error']) { // Handles twitch error body
+                    callback(json['status'] + ' - ' + json['error'] + ': ' + json['message']);
+                } else {
+                    callback(null, json);
+                }
+            } catch(e) {
+                callback(e);
+            }
+        });
+    }
+}
+
+// Callback: err, data
 TwitchClient.prototype.request = function (apicall, callback, replacementAuth) {
     var options = {
         url: this.options.apiURL + apicall,
         headers: this.getRequestHeaders()
     };
     if (replacementAuth) {
-        options.headers['Authorization'] = 'OAuth ' + replacementAuth;
+        options.headers['Authorization'] = 'Bearer ' + replacementAuth;
     }
     this.rawRequest(options, function (err, response, body) {
         if (err) {
@@ -216,45 +261,62 @@ TwitchClient.prototype.delete = function (apicall, callback) {
 
 // This requires secret and redirect uri in twitch app
 // Callback: err, data
-TwitchClient.prototype.getAuthToken = function (code, state, callback) {
-    var postData = {
-        client_id: this.options.clientID,
-        client_secret: this.options.secret,
-        grant_type: 'authorization_code',
-        redirect_uri: this.options.redirect_uri,
-        code: code,
-        state: state
-    };
-    this.post('/oauth2/token', postData, function (err, data) {
+TwitchClient.prototype.getAuthToken = function (code, callback) {
+    var options = {};
+    options.url = 'https://id.twitch.tv/oauth2/token' +
+        '?client_id=' + this.options.clientID +
+        '&client_secret=' + this.options.secret +
+        '&code=' + code +
+        '&grant_type=authorization_code' +
+        '&redirect_uri=' + this.options.redirect_uri;
+    this.rawPost(options, function (err, response, body) {
         if (err) {
             callback(err);
             return;
         }
-        callback(null, data);
+        try { // Sometimes JSON.parse gives token error?
+            var data = JSON.parse(body);
+            if (data['error']) { // Handles twitch error body
+                callback(data['status'] + ' - ' + data['error'] + ': ' + data['message']);
+            } else {
+                callback(null, data);
+            }
+        } catch(e) {
+            callback(e);
+        }
     });
 };
 
+// This requires clientID, secret, refreshToken in twitch app
 // Callback: err, data
-TwitchClient.prototype.getOtherAuthSummary = function (auth, callback) {
-    this.request('/', function (err, data) {
-        if (err) {
-            callback(err);
-            return;
-        }
-        callback(null, data);
-    }, auth);
-};
-
-// Callback: err, data
-TwitchClient.prototype.getAuthSummary = function (callback) {
-    this.request('/', function (err, data) {
-        if (err) {
-            callback(err);
-            return;
-        }
-        callback(null, data);
-    });
-};
+TwitchClient.prototype.refreshToken = function (refreshToken, callback) {
+  if (typeof(refreshToken) == 'function') {
+      callback = refreshToken
+      refreshToken = this.options.refreshToken;
+  }
+  var options = {};
+  options.url = 'https://id.twitch.tv/oauth2/token' +
+      '?grant_type=refresh_token' +
+      '&refresh_token=' + refreshToken +
+      '&client_id=' + this.options.clientID +
+      '&client_secret=' + this.options.secret;
+  this.rawPost(options, function (err, response, body) {
+      if (err) {
+          callback(err);
+          return;
+      }
+      try { // Sometimes JSON.parse gives token error?
+          var data = JSON.parse(body);
+          if (data['error']) { // Handles twitch error body
+              callback(data['status'] + ' - ' + data['error'] + ': ' + data['message']);
+          } else {
+              callback(null, data);
+          }
+      } catch(e) {
+          callback(e);
+      }
+  });
+}
 
 // Callback: err, data
 TwitchClient.prototype.getChannelByID = function (channelID, callback) {
