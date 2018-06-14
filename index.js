@@ -213,7 +213,6 @@ TwitchClient.prototype.post = function (apicall, postData, callback) {
     };
     if (typeof postData === 'function') {
         callback = postData;
-        console.log('Ah yea')
     } else {
         options.formData = postData;
     }
