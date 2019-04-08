@@ -1,5 +1,5 @@
-import * as net from 'net';
-import * as EventEmitter from 'events';
+import net from 'net';
+import EventEmitter from 'events';
 
 /**
  * Notes:
@@ -691,4 +691,4 @@ function parseTwitchMessage(msg: string): any {
   return out;
 }
 
-export default TwitchIRC;
+export = TwitchIRC;
