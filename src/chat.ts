@@ -1,6 +1,7 @@
 import net from 'net';
 import EventEmitter from 'events';
 import NotificationsEmitter from './NotificationsEmitter';
+import RoomTracker from './RoomTracker';
 
 /**
  * Notes:
@@ -494,6 +495,10 @@ class TwitchIRC extends EventEmitter {
 
   createNotificationsEmitter(): NotificationsEmitter {
     return new NotificationsEmitter(this);
+  }
+
+  createRoomTracker(): RoomTracker {
+    return new RoomTracker(this);
   }
 
   /**
