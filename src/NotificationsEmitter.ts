@@ -72,45 +72,45 @@ interface BitsNotice extends NoticeInterface {
 interface NotificationsEmitter {
   addListener(event: string, listener: (...args: any[]) => void): this;
   /** When a sub happens */
-  addListener(event: 'sub', callback: (channel: string, data: SubNotice, tags: any) => void): this;
+  addListener(event: 'sub', listener: (channel: string, data: SubNotice, tags: any) => void): this;
   /** When someone announces a resub */
-  addListener(event: 'resub', callback: (channel: string, data: ResubNotice, tags: any) => void): this;
+  addListener(event: 'resub', listener: (channel: string, data: ResubNotice, tags: any) => void): this;
   /** When someone gifts another person a sub */
-  addListener(event: 'giftsub', callback: (channel: string, data: GiftSubNotice, tags: any) => void): this;
+  addListener(event: 'giftsub', listener: (channel: string, data: GiftSubNotice, tags: any) => void): this;
   /** When someone mass gift subs to a channel */
-  addListener(event: 'massgiftsub', callback: (channel: string, data: MassGiftSubNotice, tags: any) => void): this;
+  addListener(event: 'massgiftsub', listener: (channel: string, data: MassGiftSubNotice, tags: any) => void): this;
   /** When someone sends bit message to a channel */
-  addListener(event: 'bits', callback: (channel: string, data: BitsNotice, tags: any) => void): this;
+  addListener(event: 'bits', listener: (channel: string, data: BitsNotice, tags: any) => void): this;
   /** When a any notice happens */
-  addListener(event: 'any', callback: (event: 'sub' | 'resub' | 'giftsub' | 'massgiftsub' | 'bits', channel: string, data: SubNotice | ResubNotice | GiftSubNotice | MassGiftSubNotice | BitsNotice, tags: any) => void): this;
+  addListener(event: 'any', listener: (event: 'sub' | 'resub' | 'giftsub' | 'massgiftsub' | 'bits', channel: string, data: SubNotice | ResubNotice | GiftSubNotice | MassGiftSubNotice | BitsNotice, tags: any) => void): this;
 
   on(event: string, listener: (...args: any[]) => void): this;
   /** When a sub happens */
-  on(event: 'sub', callback: (channel: string, data: SubNotice, tags: any) => void): this;
+  on(event: 'sub', listener: (channel: string, data: SubNotice, tags: any) => void): this;
   /** When someone announces a resub */
-  on(event: 'resub', callback: (channel: string, data: ResubNotice, tags: any) => void): this;
+  on(event: 'resub', listener: (channel: string, data: ResubNotice, tags: any) => void): this;
   /** When someone gifts another person a sub */
-  on(event: 'giftsub', callback: (channel: string, data: GiftSubNotice, tags: any) => void): this;
+  on(event: 'giftsub', listener: (channel: string, data: GiftSubNotice, tags: any) => void): this;
   /** When someone mass gift subs to a channel */
-  on(event: 'massgiftsub', callback: (channel: string, data: MassGiftSubNotice, tags: any) => void): this;
+  on(event: 'massgiftsub', listener: (channel: string, data: MassGiftSubNotice, tags: any) => void): this;
   /** When someone sends bit message to a channel */
-  on(event: 'bits', callback: (channel: string, data: BitsNotice, tags: any) => void): this;
+  on(event: 'bits', listener: (channel: string, data: BitsNotice, tags: any) => void): this;
   /** When a any notice happens */
-  on(event: 'any', callback: (event: 'sub' | 'resub' | 'giftsub' | 'massgiftsub' | 'bits', channel: string, data: SubNotice | ResubNotice | GiftSubNotice | MassGiftSubNotice | BitsNotice, tags: any) => void): this;
+  on(event: 'any', listener: (event: 'sub' | 'resub' | 'giftsub' | 'massgiftsub' | 'bits', channel: string, data: SubNotice | ResubNotice | GiftSubNotice | MassGiftSubNotice | BitsNotice, tags: any) => void): this;
   
   once(event: string, listener: (...args: any[]) => void): this;
   /** When a sub happens */
-  once(event: 'sub', callback: (channel: string, data: SubNotice, tags: any) => void): this;
+  once(event: 'sub', listener: (channel: string, data: SubNotice, tags: any) => void): this;
   /** When someone announces a resub */
-  once(event: 'resub', callback: (channel: string, data: ResubNotice, tags: any) => void): this;
+  once(event: 'resub', listener: (channel: string, data: ResubNotice, tags: any) => void): this;
   /** When someone gifts another person a sub */
-  once(event: 'giftsub', callback: (channel: string, data: GiftSubNotice, tags: any) => void): this;
+  once(event: 'giftsub', listener: (channel: string, data: GiftSubNotice, tags: any) => void): this;
   /** When someone mass gift subs to a channel */
-  once(event: 'massgiftsub', callback: (channel: string, data: MassGiftSubNotice, tags: any) => void): this;
+  once(event: 'massgiftsub', listener: (channel: string, data: MassGiftSubNotice, tags: any) => void): this;
   /** When someone sends bit message to a channel */
-  once(event: 'bits', callback: (channel: string, data: BitsNotice, tags: any) => void): this;
+  once(event: 'bits', listener: (channel: string, data: BitsNotice, tags: any) => void): this;
   /** When a any notice happens */
-  once(event: 'any', callback: (event: 'sub' | 'resub' | 'giftsub' | 'massgiftsub' | 'bits', channel: string, data: SubNotice | ResubNotice | GiftSubNotice | MassGiftSubNotice | BitsNotice, tags: any) => void): this;
+  once(event: 'any', listener: (event: 'sub' | 'resub' | 'giftsub' | 'massgiftsub' | 'bits', channel: string, data: SubNotice | ResubNotice | GiftSubNotice | MassGiftSubNotice | BitsNotice, tags: any) => void): this;
 
   emit(event: string, ...args: any[]): boolean;
   emit(event: 'sub', channel: string, data: SubNotice, tags: any): boolean;

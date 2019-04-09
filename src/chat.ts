@@ -33,163 +33,163 @@ import NotificationsEmitter from './NotificationsEmitter';
 interface TwitchIRC {
   addListener(event: string, listener: (...args: any[]) => void): this;
   /** When an error has happened */
-  addListener(event: 'error', callback: (error: any) => void): this;
+  addListener(event: 'error', listener: (error: any) => void): this;
   /** When a parse error happens */
-  addListener(event: 'parseerror', callback: (line: string, error: any) => void): this;
+  addListener(event: 'parseerror', listener: (line: string, error: any) => void): this;
   /** When successfully connected and authorized */
-  addListener(event: 'ready', callback: () => void): this;
+  addListener(event: 'ready', listener: () => void): this;
   /** A raw IRC event */
-  addListener(event: 'raw', callback: (raw: string, parsed: ParsedMessage) => void): this;
+  addListener(event: 'raw', listener: (raw: string, parsed: ParsedMessage) => void): this;
   /** When a raw message is sent out */
-  addListener(event: 'rawSend', callback: (message: string) => void): this;
+  addListener(event: 'rawSend', listener: (message: string) => void): this;
   /** When you have joined a channel */
-  addListener(event: 'join', callback: (channel: string) => void): this;
+  addListener(event: 'join', listener: (channel: string) => void): this;
   /** When you have left a channel */
-  addListener(event: 'part', callback: (channel: string) => void): this;
+  addListener(event: 'part', listener: (channel: string) => void): this;
   /** When a user joined a channel */
-  addListener(event: 'otherjoin', callback: (channel: string, login: string) => void): this;
+  addListener(event: 'otherjoin', listener: (channel: string, login: string) => void): this;
   /** When a user left a channel */
-  addListener(event: 'otherpart', callback: (channel: string, login: string) => void): this;
+  addListener(event: 'otherpart', listener: (channel: string, login: string) => void): this;
   /** When a message was submitted to a channel */
-  addListener(event: 'msg', callback: (channel: string, login: string, message: string, tags: any) => void): this;
+  addListener(event: 'msg', listener: (channel: string, login: string, message: string, tags: any) => void): this;
   /** When a channel changes its roomstate (like submode, slowmode) */
-  addListener(event: 'roomstate', callback: (channel: string, tags: any) => void): this;
+  addListener(event: 'roomstate', listener: (channel: string, tags: any) => void): this;
   /** When a usernotice has happened (like a sub, resub, giftsub) */
-  addListener(event: 'usernotice', callback: (channel: string, login: string, message: string, tags: any) => void): this;
+  addListener(event: 'usernotice', listener: (channel: string, login: string, message: string, tags: any) => void): this;
   /** When a channel notice happens (example: slow mode off) */
-  addListener(event: 'notice', callback: (channel: string, message: string, tags: any) => void): this;
+  addListener(event: 'notice', listener: (channel: string, message: string, tags: any) => void): this;
   /** Happens when a chat is cleared by a moderator */
-  addListener(event: 'clearchat', callback: (channel: string) => void): this;
+  addListener(event: 'clearchat', listener: (channel: string) => void): this;
   /** User was permanently or temporarily banned (tags has ban-duration if not permanent) */
-  addListener(event: 'userban', callback: (channel: string, login: string, tags: any) => void): this;
+  addListener(event: 'userban', listener: (channel: string, login: string, tags: any) => void): this;
   /** Happens when a single message was removed */
-  addListener(event: 'clearmsg', callback: (channel: string, tags: any) => void): this;
+  addListener(event: 'clearmsg', listener: (channel: string, tags: any) => void): this;
   /** Happens on successful login, tags contain information about user */
-  addListener(event: 'globaluserstate', callback: (tags: any) => void): this;
+  addListener(event: 'globaluserstate', listener: (tags: any) => void): this;
   /** Happens when you join a channel, tags contain information about user */
-  addListener(event: 'userstate', callback: (channel: string, tags: any) => void): this;
+  addListener(event: 'userstate', listener: (channel: string, tags: any) => void): this;
   /** Happens when a channel hosts a target channel. Viewers is a number is started hosting, undefined if already hosting. If taget is '-', it means it stopped hosting */
-  addListener(event: 'host', callback: (channel: string, target: string, viewers?: number) => void): this;
+  addListener(event: 'host', listener: (channel: string, target: string, viewers?: number) => void): this;
   
   on(event: string, listener: (...args: any[]) => void): this;
   /** When an error has happened */
-  on(event: 'error', callback: (error: any) => void): this;
+  on(event: 'error', listener: (error: any) => void): this;
   /** When a parse error happens */
-  on(event: 'parseerror', callback: (line: string, error: any) => void): this;
+  on(event: 'parseerror', listener: (line: string, error: any) => void): this;
   /** When successfully connected and authorized */
-  on(event: 'ready', callback: () => void): this;
+  on(event: 'ready', listener: () => void): this;
   /** A raw IRC event */
-  on(event: 'raw', callback: (raw: string, parsed: ParsedMessage) => void): this;
+  on(event: 'raw', listener: (raw: string, parsed: ParsedMessage) => void): this;
   /** When a raw message is sent out */
-  on(event: 'rawSend', callback: (message: string) => void): this;
+  on(event: 'rawSend', listener: (message: string) => void): this;
   /** When you have joined a channel */
-  on(event: 'join', callback: (channel: string) => void): this;
+  on(event: 'join', listener: (channel: string) => void): this;
   /** When you have left a channel */
-  on(event: 'part', callback: (channel: string) => void): this;
+  on(event: 'part', listener: (channel: string) => void): this;
   /** When a user joined a channel */
-  on(event: 'otherjoin', callback: (channel: string, login: string) => void): this;
+  on(event: 'otherjoin', listener: (channel: string, login: string) => void): this;
   /** When a user left a channel */
-  on(event: 'otherpart', callback: (channel: string, login: string) => void): this;
+  on(event: 'otherpart', listener: (channel: string, login: string) => void): this;
   /** When a message was submitted to a channel */
-  on(event: 'msg', callback: (channel: string, login: string, message: string, tags: any) => void): this;
+  on(event: 'msg', listener: (channel: string, login: string, message: string, tags: any) => void): this;
   /** When a channel changes its roomstate (like submode, slowmode) */
-  on(event: 'roomstate', callback: (channel: string, tags: any) => void): this;
+  on(event: 'roomstate', listener: (channel: string, tags: any) => void): this;
   /** When a usernotice has happened (like a sub, resub, giftsub) */
-  on(event: 'usernotice', callback: (channel: string, login: string, message: string, tags: any) => void): this;
+  on(event: 'usernotice', listener: (channel: string, login: string, message: string, tags: any) => void): this;
   /** When a channel notice happens (example: slow mode off) */
-  on(event: 'notice', callback: (channel: string, message: string, tags: any) => void): this;
+  on(event: 'notice', listener: (channel: string, message: string, tags: any) => void): this;
   /** Happens when a chat is cleared by a moderator */
-  on(event: 'clearchat', callback: (channel: string) => void): this;
+  on(event: 'clearchat', listener: (channel: string) => void): this;
   /** User was permanently or temporarily banned (tags has ban-duration if not permanent) */
-  on(event: 'userban', callback: (channel: string, login: string, tags: any) => void): this;
+  on(event: 'userban', listener: (channel: string, login: string, tags: any) => void): this;
   /** Happens when a single message was removed */
-  on(event: 'clearmsg', callback: (channel: string, tags: any) => void): this;
+  on(event: 'clearmsg', listener: (channel: string, tags: any) => void): this;
   /** Happens on successful login, tags contain information about user */
-  on(event: 'globaluserstate', callback: (tags: any) => void): this;
+  on(event: 'globaluserstate', listener: (tags: any) => void): this;
   /** Happens when you join a channel, tags contain information about user */
-  on(event: 'userstate', callback: (channel: string, tags: any) => void): this;
+  on(event: 'userstate', listener: (channel: string, tags: any) => void): this;
   /** Happens when a channel hosts a target channel. Viewers is a number is started hosting, undefined if already hosting. If taget is '-', it means it stopped hosting */
-  on(event: 'host', callback: (channel: string, target: string, viewers?: number) => void): this;
+  on(event: 'host', listener: (channel: string, target: string, viewers?: number) => void): this;
   
   once(event: string, listener: (...args: any[]) => void): this;
   /** When an error has happened */
-  once(event: 'error', callback: (error: any) => void): this;
+  once(event: 'error', listener: (error: any) => void): this;
   /** When a parse error happens */
-  once(event: 'parseerror', callback: (line: string, error: any) => void): this;
+  once(event: 'parseerror', listener: (line: string, error: any) => void): this;
   /** When successfully connected and authorized */
-  once(event: 'ready', callback: () => void): this;
+  once(event: 'ready', listener: () => void): this;
   /** A raw IRC event */
-  once(event: 'raw', callback: (raw: string, parsed: ParsedMessage) => void): this;
+  once(event: 'raw', listener: (raw: string, parsed: ParsedMessage) => void): this;
   /** When a raw message is sent out */
-  once(event: 'rawSend', callback: (message: string) => void): this;
+  once(event: 'rawSend', listener: (message: string) => void): this;
   /** When you have joined a channel */
-  once(event: 'join', callback: (channel: string) => void): this;
+  once(event: 'join', listener: (channel: string) => void): this;
   /** When you have left a channel */
-  once(event: 'part', callback: (channel: string) => void): this;
+  once(event: 'part', listener: (channel: string) => void): this;
   /** When a user joined a channel */
-  once(event: 'otherjoin', callback: (channel: string, login: string) => void): this;
+  once(event: 'otherjoin', listener: (channel: string, login: string) => void): this;
   /** When a user left a channel */
-  once(event: 'otherpart', callback: (channel: string, login: string) => void): this;
+  once(event: 'otherpart', listener: (channel: string, login: string) => void): this;
   /** When a message was submitted to a channel */
-  once(event: 'msg', callback: (channel: string, login: string, message: string, tags: any) => void): this;
+  once(event: 'msg', listener: (channel: string, login: string, message: string, tags: any) => void): this;
   /** When a channel changes its roomstate (like submode, slowmode) */
-  once(event: 'roomstate', callback: (channel: string, tags: any) => void): this;
+  once(event: 'roomstate', listener: (channel: string, tags: any) => void): this;
   /** When a usernotice has happened (like a sub, resub, giftsub) */
-  once(event: 'usernotice', callback: (channel: string, login: string, message: string, tags: any) => void): this;
+  once(event: 'usernotice', listener: (channel: string, login: string, message: string, tags: any) => void): this;
   /** When a channel notice happens (example: slow mode off) */
-  once(event: 'notice', callback: (channel: string, message: string, tags: any) => void): this;
+  once(event: 'notice', listener: (channel: string, message: string, tags: any) => void): this;
   /** Happens when a chat is cleared by a moderator */
-  once(event: 'clearchat', callback: (channel: string) => void): this;
+  once(event: 'clearchat', listener: (channel: string) => void): this;
   /** User was permanently or temporarily banned (tags has ban-duration if not permanent) */
-  once(event: 'userban', callback: (channel: string, login: string, tags: any) => void): this;
+  once(event: 'userban', listener: (channel: string, login: string, tags: any) => void): this;
   /** Happens when a single message was removed */
-  once(event: 'clearmsg', callback: (channel: string, tags: any) => void): this;
+  once(event: 'clearmsg', listener: (channel: string, tags: any) => void): this;
   /** Happens on successful login, tags contain information about user */
-  once(event: 'globaluserstate', callback: (tags: any) => void): this;
+  once(event: 'globaluserstate', listener: (tags: any) => void): this;
   /** Happens when you join a channel, tags contain information about user */
-  once(event: 'userstate', callback: (channel: string, tags: any) => void): this;
+  once(event: 'userstate', listener: (channel: string, tags: any) => void): this;
   /** Happens when a channel hosts a target channel. Viewers is a number is started hosting, undefined if already hosting. If taget is '-', it means it stopped hosting */
-  once(event: 'host', callback: (channel: string, target: string, viewers?: number) => void): this;
+  once(event: 'host', listener: (channel: string, target: string, viewers?: number) => void): this;
   
   onceIf(event: string, listener: (...args: any[]) => boolean, timeout?: number): this;
   /** When an error has happened */
-  onceIf(event: 'error', callback: (error: any) => boolean, timeout?: number): this;
+  onceIf(event: 'error', listener: (error: any) => boolean, timeout?: number): this;
   /** When a parse error happens */
-  onceIf(event: 'parseerror', callback: (line: string, error: any) => boolean, timeout?: number): this;
+  onceIf(event: 'parseerror', listener: (line: string, error: any) => boolean, timeout?: number): this;
   /** When successfully connected and authorized */
-  onceIf(event: 'ready', callback: () => boolean, timeout?: number): this;
+  onceIf(event: 'ready', listener: () => boolean, timeout?: number): this;
   /** A raw IRC event */
-  onceIf(event: 'raw', callback: (raw: string, parsed: ParsedMessage) => boolean, timeout?: number): this;
+  onceIf(event: 'raw', listener: (raw: string, parsed: ParsedMessage) => boolean, timeout?: number): this;
   /** When a raw message is sent out */
-  onceIf(event: 'rawSend', callback: (message: string) => boolean, timeout?: number): this;
+  onceIf(event: 'rawSend', listener: (message: string) => boolean, timeout?: number): this;
   /** When you have joined a channel */
-  onceIf(event: 'join', callback: (channel: string) => boolean, timeout?: number): this;
+  onceIf(event: 'join', listener: (channel: string) => boolean, timeout?: number): this;
   /** When you have left a channel */
-  onceIf(event: 'part', callback: (channel: string) => boolean, timeout?: number): this;
+  onceIf(event: 'part', listener: (channel: string) => boolean, timeout?: number): this;
   /** When a user joined a channel */
-  onceIf(event: 'otherjoin', callback: (channel: string, login: string) => boolean, timeout?: number): this;
+  onceIf(event: 'otherjoin', listener: (channel: string, login: string) => boolean, timeout?: number): this;
   /** When a user left a channel */
-  onceIf(event: 'otherpart', callback: (channel: string, login: string) => boolean, timeout?: number): this;
+  onceIf(event: 'otherpart', listener: (channel: string, login: string) => boolean, timeout?: number): this;
   /** When a message was submitted to a channel */
-  onceIf(event: 'msg', callback: (channel: string, login: string, message: string, tags: any) => boolean, timeout?: number): this;
+  onceIf(event: 'msg', listener: (channel: string, login: string, message: string, tags: any) => boolean, timeout?: number): this;
   /** When a channel changes its roomstate (like submode, slowmode) */
-  onceIf(event: 'roomstate', callback: (channel: string, tags: any) => boolean, timeout?: number): this;
+  onceIf(event: 'roomstate', listener: (channel: string, tags: any) => boolean, timeout?: number): this;
   /** When a usernotice has happened (like a sub, resub, giftsub) */
-  onceIf(event: 'usernotice', callback: (channel: string, login: string, message: string, tags: any) => boolean, timeout?: number): this;
+  onceIf(event: 'usernotice', listener: (channel: string, login: string, message: string, tags: any) => boolean, timeout?: number): this;
   /** When a channel notice happens (example: slow mode off) */
-  onceIf(event: 'notice', callback: (channel: string, message: string, tags: any) => boolean, timeout?: number): this;
+  onceIf(event: 'notice', listener: (channel: string, message: string, tags: any) => boolean, timeout?: number): this;
   /** Happens when a chat is cleared by a moderator */
-  onceIf(event: 'clearchat', callback: (channel: string) => boolean, timeout?: number): this;
+  onceIf(event: 'clearchat', listener: (channel: string) => boolean, timeout?: number): this;
   /** User was permanently or temporarily banned (tags has ban-duration if not permanent) */
-  onceIf(event: 'userban', callback: (channel: string, login: string, tags: any) => boolean, timeout?: number): this;
+  onceIf(event: 'userban', listener: (channel: string, login: string, tags: any) => boolean, timeout?: number): this;
   /** Happens when a single message was removed */
-  onceIf(event: 'clearmsg', callback: (channel: string, tags: any) => boolean, timeout?: number): this;
+  onceIf(event: 'clearmsg', listener: (channel: string, tags: any) => boolean, timeout?: number): this;
   /** Happens on successful login, tags contain information about user */
-  onceIf(event: 'globaluserstate', callback: (tags: any) => boolean, timeout?: number): this;
+  onceIf(event: 'globaluserstate', listener: (tags: any) => boolean, timeout?: number): this;
   /** Happens when you join a channel, tags contain information about user */
-  onceIf(event: 'userstate', callback: (channel: string, tags: any) => boolean, timeout?: number): this;
+  onceIf(event: 'userstate', listener: (channel: string, tags: any) => boolean, timeout?: number): this;
   /** Happens when a channel hosts a target channel. Viewers is a number is started hosting, undefined if already hosting. If taget is '-', it means it stopped hosting */
-  onceIf(event: 'host', callback: (channel: string, target: string, viewers?: number) => boolean, timeout?: number): this;
+  onceIf(event: 'host', listener: (channel: string, target: string, viewers?: number) => boolean, timeout?: number): this;
   
   emit(event: string, ...args: any[]): boolean;
   emit(event: 'error', error: any): boolean;
