@@ -1,5 +1,6 @@
 import net from 'net';
 import EventEmitter from 'events';
+import NotificationsEmitter from './NotificationsEmitter';
 
 /**
  * Notes:
@@ -489,6 +490,10 @@ class TwitchIRC extends EventEmitter {
    */
   isReady(): boolean {
     return this.ready;
+  }
+
+  createNotificationsEmitter(): NotificationsEmitter {
+    return new NotificationsEmitter(this);
   }
 
   /**
