@@ -532,8 +532,12 @@ class TwitchIRC extends EventEmitter {
     if (!channel.startsWith('#')) channel = '#' + channel;
     this.send('JOIN ' + channel);
     if (typeof (callback) === 'function') {
+      console.log('HELLO1');
       this.onceIf('join', (chn) => {
+        if (!chn.startsWith('#')) chn = '#' + chn;
+        console.log('HELLO2 ' + chn);
         if (chn === channel) {
+          console.log('HELLO3');
           callback();
           return true;
         }
@@ -552,6 +556,7 @@ class TwitchIRC extends EventEmitter {
     this.send('PART ' + channel);
     if (typeof (callback) === 'function') {
       this.onceIf('part', (chn) => {
+        if (!chn.startsWith('#')) chn = '#' + chn;
         if (chn === channel) {
           callback();
           return true;
