@@ -532,12 +532,9 @@ class TwitchIRC extends EventEmitter {
     if (!channel.startsWith('#')) channel = '#' + channel;
     this.send('JOIN ' + channel);
     if (typeof (callback) === 'function') {
-      console.log('HELLO1');
       this.onceIf('join', (chn) => {
         if (!chn.startsWith('#')) chn = '#' + chn;
-        console.log('HELLO2 ' + chn);
         if (chn === channel) {
-          console.log('HELLO3');
           callback();
           return true;
         }
