@@ -334,6 +334,7 @@ class TwitchIRC extends EventEmitter {
     // If already connecting/connected clear that
     if (this.socket !== null) {
       this.socket.end();
+      this.socket.removeAllListeners();
       this.socket.unref();
       this.socket = null;
     }
@@ -597,9 +598,15 @@ class TwitchIRC extends EventEmitter {
    */
   close(callback?: (err: any) => void): void {
     this.closeCalled = true;
-    if (this.socket !== null) {
-      this.socket.end();
-      this.socket.once('close', callback);
+    const socket = this.socket;
+    if (socket !== null) {
+      socket.end();
+      socket.once('close', (err) => {
+        if (callback) callback(err);
+        socket.removeAllListeners();
+        socket.unref();
+      });
+      this.socket = null;
     }
   }
 }
