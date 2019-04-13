@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import ExpandedEventEmitter from './ExpandedEventEmitter';
 import uuidv4 from 'uuid/v4';
 import TwitchIRC from './chat';
 
@@ -161,7 +161,7 @@ class SmartTimeout {
   }
 }
 
-class NotificationsEmitter extends EventEmitter {
+class NotificationsEmitter extends ExpandedEventEmitter {
   giftSubs: any[];
   massGifters: any[];
 

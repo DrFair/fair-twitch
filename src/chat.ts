@@ -1,5 +1,5 @@
 import net from 'net';
-import EventEmitter from 'events';
+import ExpandedEventEmitter from './ExpandedEventEmitter';
 import NotificationsEmitter from './NotificationsEmitter';
 import RoomTracker from './RoomTracker';
 
@@ -262,7 +262,7 @@ interface ChatOptions {
   successMessages: string[]
 }
 
-class TwitchIRC extends EventEmitter {
+class TwitchIRC extends ExpandedEventEmitter {
   options: ChatOptions;
   ready: boolean;
   sendQueue: string[];

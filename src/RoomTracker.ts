@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import ExpandedEventEmitter from './ExpandedEventEmitter';
 import TwitchIRC from './chat';
 
 // This keeps track of what channels/rooms that the Twitch IRC client is in
@@ -54,7 +54,7 @@ interface Room {
   state: RoomState | null,
 }
 
-class RoomTracker extends EventEmitter {
+class RoomTracker extends ExpandedEventEmitter {
   rooms: Room[];
 
   /**
