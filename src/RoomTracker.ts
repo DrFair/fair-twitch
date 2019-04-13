@@ -1,5 +1,6 @@
 import ExpandedEventEmitter from './ExpandedEventEmitter';
 import TwitchIRC from './chat';
+import uuidv4 from 'uuid/v4';
 
 // This keeps track of what channels/rooms that the Twitch IRC client is in
 // Also keeps track of room states. Like slow mode, sub mode, follower mode etc.
@@ -55,15 +56,20 @@ interface Room {
 }
 
 class RoomTracker extends ExpandedEventEmitter {
+  twitchIRC: TwitchIRC;
   rooms: Room[];
+  eventID: string;
 
   /**
    * @param twitchIRC The Twitch IRC client
    */
   constructor(twitchIRC: TwitchIRC) {
     super();
+    this.twitchIRC = twitchIRC;
     this.rooms = [];
-    twitchIRC.addListener('join', (channel) => {
+    this.eventID = uuidv4();
+    
+    this.twitchIRC.addListener('join#' + this.eventID, (channel) => {
       const index = this._getRoomObjIndex(channel);
       if (index === -1) {
         const roomObj = {
@@ -75,7 +81,7 @@ class RoomTracker extends ExpandedEventEmitter {
         this.emit('change', channel);
       }
     });
-    twitchIRC.addListener('part', (channel) => {
+    this.twitchIRC.addListener('part#' + this.eventID, (channel) => {
       const index = this._getRoomObjIndex(channel);
       if (index !== -1) {
         this.rooms.splice(index, 1);
@@ -83,7 +89,7 @@ class RoomTracker extends ExpandedEventEmitter {
         this.emit('change', channel);
       }
     });
-    twitchIRC.addListener('roomstate', (channel, tags) => {
+    this.twitchIRC.addListener('roomstate#' + this.eventID, (channel, tags) => {
       const roomObj = this._getRoomObj(channel);
       if (roomObj !== null) {
         roomObj.state = tags;
@@ -91,6 +97,13 @@ class RoomTracker extends ExpandedEventEmitter {
         this.emit('change', channel);
       }
     });
+  }
+
+  /**
+   * Removes all event listeners added from this tracker
+   */
+  dispose() {
+    this.twitchIRC.removeIDListeners(this.eventID);
   }
 
   /**

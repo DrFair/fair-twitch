@@ -162,14 +162,19 @@ class SmartTimeout {
 }
 
 class NotificationsEmitter extends ExpandedEventEmitter {
+  twitchIRC: TwitchIRC;
   giftSubs: any[];
   massGifters: any[];
+  eventID: string;
 
   /**
    * @param twitchIRC The Twitch IRC client
    */
   constructor(twitchIRC: TwitchIRC) {
     super();
+    this.twitchIRC = twitchIRC;
+    this.eventID = uuidv4();
+
     // We want to collect all the recepients of a mass gift sub under 1 notice
     // Since all mass gift subs are also displayed as a gift sub and there's no way
     // to guarantee that 'submysterygift' event triggers before the giftsub events,
@@ -179,7 +184,7 @@ class NotificationsEmitter extends ExpandedEventEmitter {
     this.giftSubs = [];
     this.massGifters = [];
 
-    twitchIRC.addListener('usernotice', (channel, login, message, tags) => {
+    this.twitchIRC.addListener('usernotice#' + this.eventID, (channel, login, message, tags) => {
       const data: any = {
         login: login,
         displayName: tags['display-name'],
@@ -290,7 +295,7 @@ class NotificationsEmitter extends ExpandedEventEmitter {
       }
     });
 
-    twitchIRC.addListener('msg', (channel, login, message, tags) => {
+    this.twitchIRC.addListener('msg#' + this.eventID, (channel, login, message, tags) => {
       if (tags.bits) {
         const data = {
           login: login,
@@ -303,6 +308,13 @@ class NotificationsEmitter extends ExpandedEventEmitter {
         this._emitNotification('bits', channel, data, tags);
       }
     });
+  }
+
+  /**
+   * Removes all event listeners added from this tracker
+   */
+  dispose() {
+    this.twitchIRC.removeIDListeners(this.eventID);
   }
 
   /**
