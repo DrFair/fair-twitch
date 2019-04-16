@@ -29,6 +29,7 @@ interface APIOptions {
   redirectURL: string | null,
   refreshToken: string | null,
   accessToken: string | null,
+  autoRefreshToken: boolean,
   apiURL: string,
   authURL: string
 }
@@ -74,6 +75,7 @@ class TwitchAPI {
       redirectURL: null,
       refreshToken: null,
       accessToken: null,
+      autoRefreshToken: true,
       apiURL: 'https://api.twitch.tv/',
       authURL: 'https://id.twitch.tv/'
     };
@@ -88,7 +90,7 @@ class TwitchAPI {
   }
 
   private _getAuthHeaders(options: RequestOptions, callback: (err: any, headers?: {}) => void, recursive?: boolean): void {
-    let { clientID, clientSecret, refreshToken, accessToken } = this.options;
+    let { clientID, clientSecret, refreshToken, accessToken, autoRefreshToken } = this.options;
     if (options.clientID !== undefined) clientID = options.clientID;
     if (options.accessToken !== undefined) accessToken = options.accessToken;
     const headers = {};
@@ -113,7 +115,7 @@ class TwitchAPI {
       } else {
         headers['Authorization'] = 'Bearer ' + accessToken;
       }
-    } else if (refreshToken !== null && options.accessToken === undefined) {
+    } else if (autoRefreshToken && refreshToken !== null && options.accessToken === undefined) {
       // We don't have an accessToken, but we do have a refresh token.
       // And the accessToken is not custom for this request.
       // So we use the refresh token to generate a new access token.
