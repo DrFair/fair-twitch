@@ -109,7 +109,7 @@ interface TwitchIRC {
   on(event: 'globaluserstate', listener: (tags: any) => void): this;
   /** Happens when you join a channel, tags contain information about user */
   on(event: 'userstate', listener: (channel: string, tags: any) => void): this;
-  /** Happens when a channel hosts a target channel. Viewers is a number is started hosting, undefined if already hosting. If taget is '-', it means it stopped hosting */
+  /** Happens when a channel hosts a target channel. Viewers is a number when started hosting, undefined if already hosting. If taget is '-', it means it stopped hosting */
   on(event: 'host', listener: (channel: string, target: string, viewers?: number) => void): this;
   
   once(event: string, listener: (...args: any[]) => void): this;
