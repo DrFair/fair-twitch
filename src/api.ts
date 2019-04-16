@@ -232,7 +232,7 @@ class TwitchAPI extends ExpandedEventEmitter {
         if (data.access_token) {
           this.options.accessToken = data.access_token;
           if (callback) callback(null);
-          else this.emit('tokenrefresh', data);
+          this.emit('tokenrefresh', data);
         } else {
           err = {
             error: 'Invalid refresh token',
