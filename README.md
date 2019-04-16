@@ -125,6 +125,7 @@ chat.on('ready', function() {
   // I have now successfully connected and authenticated!
 });
 ```
+An OAuth token can be [generated here](https://twitchapps.com/tmi/) or you can do it with your own application by following [Twitch's authentication process](https://dev.twitch.tv/docs/authentication/).
 
 Join and leave channel chat rooms:
 ```
