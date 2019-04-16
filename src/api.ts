@@ -52,6 +52,8 @@ interface RequestOptions {
   clientID?: string,
   /** Replacement accessToken, use null to not set. Defaults to constructor option accessToken */
   accessToken?: string,
+  /** The access token prefix. Defaults to "OAuth" for kraken calls and "Bearer" for other */
+  accessTokenPrefix?: string,
 }
 
 class DebugLog {
@@ -150,10 +152,14 @@ class TwitchAPI extends ExpandedEventEmitter {
       this.debugLog.log('Using new Twitch API Authorization');
     }
     if (accessToken !== null) {
-      if (oldAPI) {
-        headers['Authorization'] = 'Oauth ' + accessToken;
+      if (options.accessTokenPrefix !== undefined) {
+        headers['Authorization'] = `${options.accessTokenPrefix} ${accessToken}`;
       } else {
-        headers['Authorization'] = 'Bearer ' + accessToken;
+        if (oldAPI) {
+          headers['Authorization'] = 'OAuth ' + accessToken;
+        } else {
+          headers['Authorization'] = 'Bearer ' + accessToken;
+        }
       }
     } else if (autoRefreshToken && refreshToken !== null && options.accessToken === undefined) {
       // We don't have an accessToken, but we do have a refresh token.
@@ -277,7 +283,8 @@ class TwitchAPI extends ExpandedEventEmitter {
     this.request({
       method: 'GET',
       url: 'oauth2/validate',
-      baseURL: this.options.authURL
+      baseURL: this.options.authURL,
+      accessTokenPrefix: 'OAuth'
     }, (err, data, res, body) => {
       if (err) {
         if (callback) callback(err);
