@@ -73,6 +73,8 @@ interface TwitchAPI {
   addListener(event: string, listener: (...args: any[]) => void): this;
   /** When an error has happened */
   addListener(event: 'error', listener: (error: any) => void): this;
+  /** When a debug message happens */
+  addListener(event: 'debug', listener: (...message: any) => void): this;
   /** When the access token has been validated */
   addListener(event: 'tokenvalidate', listener: (data: any) => void): this;
   /** When the access token has been refreshed */
@@ -81,6 +83,8 @@ interface TwitchAPI {
   on(event: string, listener: (...args: any[]) => void): this;
   /** When an error has happened */
   on(event: 'error', listener: (error: any) => void): this;
+  /** When a debug message happens */
+  on(event: 'debug', listener: (...message: any) => void): this;
   /** When the access token has been validated */
   on(event: 'tokenvalidate', listener: (data: any) => void): this;
   /** When the access token has been refreshed */
@@ -89,6 +93,8 @@ interface TwitchAPI {
   once(event: string, listener: (...args: any[]) => void): this;
   /** When an error has happened */
   once(event: 'error', listener: (error: any) => void): this;
+  /** When a debug message happens */
+  once(event: 'debug', listener: (...message: any) => void): this;
   /** When the access token has been validated */
   once(event: 'tokenvalidate', listener: (data: any) => void): this;
   /** When the access token has been refreshed */
@@ -96,13 +102,13 @@ interface TwitchAPI {
   
   emit(event: string, ...args: any[]): boolean;
   emit(event: 'error', error: any): boolean;
+  emit(event: 'debug', ...message: any): boolean;
   emit(event: 'tokenvalidate', data: any): boolean;
   emit(event: 'tokenrefresh', data: any): boolean;
 }
 
 class TwitchAPI extends ExpandedEventEmitter {
   options: APIOptions;
-  debugLog: DebugLog;
   tokenData: any;
 
   constructor(options?: APIOptionsParam) {
@@ -125,7 +131,6 @@ class TwitchAPI extends ExpandedEventEmitter {
         }
       }
     }
-    this.debugLog = new DebugLog();
     if (this.options.validateToken) {
       this.validateAccessToken();
     }
@@ -145,11 +150,11 @@ class TwitchAPI extends ExpandedEventEmitter {
     const oldAPI = options.url.startsWith('kraken');
     if (oldAPI) {
       // We expect it to be Twitch API v5
-      this.debugLog.log('Using Twitch API v5 Authorization');
+      this.emit('debug', 'Using Twitch API v5 Authorization');
       headers['Accept'] = 'application/vnd.twitchtv.v5+json';
     } else {
       // We expect it to be new Twitch API
-      this.debugLog.log('Using new Twitch API Authorization');
+      this.emit('debug', 'Using new Twitch API Authorization');
     }
     if (accessToken !== null) {
       if (options.accessTokenPrefix !== undefined) {
@@ -169,7 +174,7 @@ class TwitchAPI extends ExpandedEventEmitter {
         !recursive && // If it's a recursive call, don't try to refresh token again
         this.options.clientID !== null && clientSecret !== null // And we have nessecary data to refresh token
       ) {
-        this.debugLog.log('Getting new access token from refresh token');
+        this.emit('debug', 'Getting new access token from refresh token');
         this.refreshAccessToken((err) => {
           if (err) return callback(err);
           this._getAuthHeaders(options, callback, true);
@@ -248,7 +253,7 @@ class TwitchAPI extends ExpandedEventEmitter {
   request(options: RequestOptionsMethod, callback?: RequestCallback, recursive?: boolean): void {
     this._getAuthHeaders(options, (err, headers) => {
       if (err) return callback(err);
-      this.debugLog.log('Starting request', {
+      this.emit('debug', 'Starting request', {
         options: options,
         headers: headers
       });
@@ -264,7 +269,7 @@ class TwitchAPI extends ExpandedEventEmitter {
         }
         this._jsonTwitchBody(res, body, (err, data, res, body) => {
           if (!recursive && this.options.accessToken !== null && err && err.status === 401) {
-            this.debugLog.log('Unauthorized request. Clearing accessToken and trying again.');
+            this.emit('debug', 'Unauthorized request. Clearing accessToken and trying again.');
             this.options.accessToken = null;
             this.request(options, callback, true);
             return;
