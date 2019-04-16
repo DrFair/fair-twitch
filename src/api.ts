@@ -56,19 +56,6 @@ interface RequestOptions {
   accessTokenPrefix?: string,
 }
 
-class DebugLog {
-  emitter: ExpandedEventEmitter;
-  constructor() {
-    this.emitter = new ExpandedEventEmitter();
-  }
-  log(...args: any[]): void {
-    this.emitter.emit('log', args);
-  }
-  on(callback: (...args: any[]) => void): void {
-    this.emitter.on('log', callback);
-  }
-}
-
 interface TwitchAPI {
   addListener(event: string, listener: (...args: any[]) => void): this;
   /** When an error has happened */
