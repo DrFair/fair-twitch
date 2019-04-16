@@ -297,7 +297,7 @@ class TwitchAPI extends ExpandedEventEmitter {
     });
   }
 
-  get(urlOrOptions: any, callback?: RequestCallback): void {
+  get(urlOrOptions: RequestOptions | string, callback?: RequestCallback): void {
     let opts: any;
     opts = { method: 'GET' };
     if (typeof urlOrOptions !== 'string') opts = Object.assign(opts, urlOrOptions);
@@ -305,7 +305,7 @@ class TwitchAPI extends ExpandedEventEmitter {
     this.request(opts, callback);
   }
 
-  post(urlOrOptions: any, callback?: RequestCallback): void {
+  post(urlOrOptions: RequestOptions | string, callback?: RequestCallback): void {
     let opts: any;
     opts = { method: 'POST' };
     if (typeof urlOrOptions !== 'string') opts = Object.assign(opts, urlOrOptions);
@@ -313,7 +313,7 @@ class TwitchAPI extends ExpandedEventEmitter {
     this.request(opts, callback);
   }
 
-  delete(urlOrOptions: any, callback?: RequestCallback): void {
+  delete(urlOrOptions: RequestOptions | string, callback?: RequestCallback): void {
     let opts: any;
     opts = { method: 'DELETE' };
     if (typeof urlOrOptions !== 'string') opts = Object.assign(opts, urlOrOptions);
@@ -321,7 +321,7 @@ class TwitchAPI extends ExpandedEventEmitter {
     this.request(opts, callback);
   }
 
-  put(urlOrOptions: any, callback?: RequestCallback): void {
+  put(urlOrOptions: RequestOptions | string, callback?: RequestCallback): void {
     let opts: any;
     opts = { method: 'PUT' };
     if (typeof urlOrOptions !== 'string') opts = Object.assign(opts, urlOrOptions);
