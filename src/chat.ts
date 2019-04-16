@@ -48,9 +48,9 @@ interface TwitchIRC {
   /** When you have left a channel */
   addListener(event: 'part', listener: (channel: string) => void): this;
   /** When a user joined a channel */
-  addListener(event: 'otherjoin', listener: (channel: string, login: string) => void): this;
+  addListener(event: 'userjoin', listener: (channel: string, login: string) => void): this;
   /** When a user left a channel */
-  addListener(event: 'otherpart', listener: (channel: string, login: string) => void): this;
+  addListener(event: 'userpart', listener: (channel: string, login: string) => void): this;
   /** When a message was submitted to a channel */
   addListener(event: 'msg', listener: (channel: string, login: string, message: string, tags: any) => void): this;
   /** When a channel changes its roomstate (like submode, slowmode) */
@@ -88,9 +88,9 @@ interface TwitchIRC {
   /** When you have left a channel */
   on(event: 'part', listener: (channel: string) => void): this;
   /** When a user joined a channel */
-  on(event: 'otherjoin', listener: (channel: string, login: string) => void): this;
+  on(event: 'userjoin', listener: (channel: string, login: string) => void): this;
   /** When a user left a channel */
-  on(event: 'otherpart', listener: (channel: string, login: string) => void): this;
+  on(event: 'userpart', listener: (channel: string, login: string) => void): this;
   /** When a message was submitted to a channel */
   on(event: 'msg', listener: (channel: string, login: string, message: string, tags: any) => void): this;
   /** When a channel changes its roomstate (like submode, slowmode) */
@@ -128,9 +128,9 @@ interface TwitchIRC {
   /** When you have left a channel */
   once(event: 'part', listener: (channel: string) => void): this;
   /** When a user joined a channel */
-  once(event: 'otherjoin', listener: (channel: string, login: string) => void): this;
+  once(event: 'userjoin', listener: (channel: string, login: string) => void): this;
   /** When a user left a channel */
-  once(event: 'otherpart', listener: (channel: string, login: string) => void): this;
+  once(event: 'userpart', listener: (channel: string, login: string) => void): this;
   /** When a message was submitted to a channel */
   once(event: 'msg', listener: (channel: string, login: string, message: string, tags: any) => void): this;
   /** When a channel changes its roomstate (like submode, slowmode) */
@@ -168,9 +168,9 @@ interface TwitchIRC {
   /** When you have left a channel */
   onceIf(event: 'part', listener: (channel: string) => boolean, timeout?: number): this;
   /** When a user joined a channel */
-  onceIf(event: 'otherjoin', listener: (channel: string, login: string) => boolean, timeout?: number): this;
+  onceIf(event: 'userjoin', listener: (channel: string, login: string) => boolean, timeout?: number): this;
   /** When a user left a channel */
-  onceIf(event: 'otherpart', listener: (channel: string, login: string) => boolean, timeout?: number): this;
+  onceIf(event: 'userpart', listener: (channel: string, login: string) => boolean, timeout?: number): this;
   /** When a message was submitted to a channel */
   onceIf(event: 'msg', listener: (channel: string, login: string, message: string, tags: any) => boolean, timeout?: number): this;
   /** When a channel changes its roomstate (like submode, slowmode) */
@@ -200,8 +200,8 @@ interface TwitchIRC {
   emit(event: 'rawSend', message: string): boolean;
   emit(event: 'join', channel: string): boolean;
   emit(event: 'part', channel: string): boolean;
-  emit(event: 'otherjoin', channel: string, login: string): boolean;
-  emit(event: 'otherpart', channel: string, login: string): boolean;
+  emit(event: 'userjoin', channel: string, login: string): boolean;
+  emit(event: 'userpart', channel: string, login: string): boolean;
   emit(event: 'msg', channel: string, login: string, message: string, tags: any): boolean;
   emit(event: 'roomstate', channel: string, tags: any): boolean;
   emit(event: 'usernotice', channel: string, login: string, message: string, tags: any): boolean;
@@ -400,7 +400,7 @@ class TwitchIRC extends ExpandedEventEmitter {
                 if (joinLogin === this.options.login) {
                   this.emit('join', pl.channel);
                 } else {
-                  this.emit('otherjoin', pl.channel, joinLogin);
+                  this.emit('userjoin', pl.channel, joinLogin);
                 }
                 break;
               case 'PART':
@@ -408,7 +408,7 @@ class TwitchIRC extends ExpandedEventEmitter {
                 if (partLogin === this.options.login) {
                   this.emit('part', pl.channel);
                 } else {
-                  this.emit('otherpart', pl.channel, partLogin);
+                  this.emit('userpart', pl.channel, partLogin);
                 }
                 break;
               case 'PRIVMSG':
