@@ -17,6 +17,8 @@ interface APIOptionsParam {
   accessToken?: string,
   /** If the api should automatically refresh access token if getting an unauthorized error. Defaults to true */
   autoRefreshToken?: boolean,
+  /** If should validate token on construction. Defaults to true */
+  validateToken?: boolean,
   /** The Twitch API url. Defaults to "https://api.twitch.tv/" */
   apiURL?: string,
   /** The Twitch authentication url. Defaults to "https://id.twitch.tv/" */
@@ -30,6 +32,7 @@ interface APIOptions {
   refreshToken: string | null,
   accessToken: string | null,
   autoRefreshToken: boolean,
+  validateToken: boolean,
   apiURL: string,
   authURL: string
 }
@@ -64,11 +67,44 @@ class DebugLog {
   }
 }
 
-class TwitchAPI {
+interface TwitchAPI {
+  addListener(event: string, listener: (...args: any[]) => void): this;
+  /** When an error has happened */
+  addListener(event: 'error', listener: (error: any) => void): this;
+  /** When the access token has been validated */
+  addListener(event: 'tokenvalidate', listener: (data: any) => void): this;
+  /** When the access token has been refreshed */
+  addListener(event: 'tokenrefresh', listener: (data: any) => void): this;
+  
+  on(event: string, listener: (...args: any[]) => void): this;
+  /** When an error has happened */
+  on(event: 'error', listener: (error: any) => void): this;
+  /** When the access token has been validated */
+  on(event: 'tokenvalidate', listener: (data: any) => void): this;
+  /** When the access token has been refreshed */
+  on(event: 'tokenrefresh', listener: (data: any) => void): this;
+
+  once(event: string, listener: (...args: any[]) => void): this;
+  /** When an error has happened */
+  once(event: 'error', listener: (error: any) => void): this;
+  /** When the access token has been validated */
+  once(event: 'tokenvalidate', listener: (data: any) => void): this;
+  /** When the access token has been refreshed */
+  once(event: 'tokenrefresh', listener: (data: any) => void): this;
+  
+  emit(event: string, ...args: any[]): boolean;
+  emit(event: 'error', error: any): boolean;
+  emit(event: 'tokenvalidate', data: any): boolean;
+  emit(event: 'tokenrefresh', data: any): boolean;
+}
+
+class TwitchAPI extends ExpandedEventEmitter {
   options: APIOptions;
   debugLog: DebugLog;
+  tokenData: any;
 
   constructor(options?: APIOptionsParam) {
+    super();
     this.options = {
       clientID: null,
       clientSecret: null,
@@ -76,6 +112,7 @@ class TwitchAPI {
       refreshToken: null,
       accessToken: null,
       autoRefreshToken: true,
+      validateToken: true,
       apiURL: 'https://api.twitch.tv/',
       authURL: 'https://id.twitch.tv/'
     };
@@ -87,6 +124,9 @@ class TwitchAPI {
       }
     }
     this.debugLog = new DebugLog();
+    if (this.options.validateToken) {
+      this.validateAccessToken();
+    }
   }
 
   private _getAuthHeaders(options: RequestOptions, callback: (err: any, headers?: {}) => void, recursive?: boolean): void {
@@ -156,7 +196,7 @@ class TwitchAPI {
    * Requires clientID, clientSecret and refreshToken in constructor options.
    * @param callback Callback for when the access token has been refreshed
    */
-  refreshAccessToken(callback: (err: any) => void): void {
+  refreshAccessToken(callback?: (err: any) => void): void {
     const { clientID, clientSecret, refreshToken, authURL } = this.options;
     if (clientID === null) return callback(new Error('Missing clientID'));
     if (clientSecret === null) return callback(new Error('Missing clientSecret'));
@@ -166,17 +206,34 @@ class TwitchAPI {
       method: 'POST',
       url: url
     }, (err, res, body) => {
-      if (err) return callback(err);
+      if (err) {
+        if (callback) callback(err);
+        else this.emit('error', {
+          error: 'Error refreshing access token',
+          message: err
+        });
+        return;
+      }
       this._jsonTwitchBody(res, body, (err, data) => {
-        if (err) return callback(err);
+        if (err) {
+          if (callback) callback(err);
+          else this.emit('error', {
+            error: 'Error refreshing access token',
+            message: err
+          });
+          return;
+        }
         if (data.access_token) {
           this.options.accessToken = data.access_token;
-          callback(null);
+          if (callback) callback(null);
+          else this.emit('tokenrefresh', data);
         } else {
-          callback({
+          err = {
             error: 'Invalid refresh token',
             message: 'Could not get new access token from given refresh token'
-          });
+          };
+          if (callback) callback(err);
+          else this.emit('error', err);
         }
       });
     });
@@ -212,14 +269,27 @@ class TwitchAPI {
     });
   }
 
-  validateAccessToken(callback: (err: any, data?: any) => void): void {
+  /**
+   * Runs an oauth validate access token from Twitch
+   * @param callback The callback for the Twitch data sent back
+   */
+  validateAccessToken(callback?: (err: any, data?: any) => void): void {
     this.request({
       method: 'GET',
       url: 'oauth2/validate',
       baseURL: this.options.authURL
     }, (err, data, res, body) => {
-      if (err) return callback(err);
-      return callback(null, data);
+      if (err) {
+        if (callback) callback(err);
+        else this.emit('error', {
+          error: 'Error validating access token',
+          message: err
+        });
+        return;
+      }
+      this.tokenData = data;
+      if (callback) callback(null, data);
+      else this.emit('tokenvalidate', data);
     });
   }
 
