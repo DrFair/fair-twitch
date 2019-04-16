@@ -1,7 +1,10 @@
-import * as request from 'request';
-
 import TwitchIRC from './chat';
+import TwitchAPI from './api';
 
 export = {
-  chat: TwitchIRC
+  default: TwitchAPI,
+  TwitchAPI: TwitchAPI,
+  api: TwitchAPI,
+  TwitchIRC: TwitchIRC,
+  chat: TwitchIRC,
 }
