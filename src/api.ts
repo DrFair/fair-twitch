@@ -98,8 +98,13 @@ class TwitchAPI extends ExpandedEventEmitter {
   options: APIOptions;
   tokenData: any;
 
-  constructor(options?: APIOptionsParam) {
+  constructor(options?: APIOptionsParam | string) {
     super();
+    if (typeof options === 'string') {
+      options = {
+        clientID: options
+      };
+    }
     this.options = {
       clientID: null,
       clientSecret: null,
