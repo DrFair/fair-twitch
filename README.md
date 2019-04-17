@@ -12,6 +12,10 @@ Note: This was made for personal use, so it probably won't be supported that muc
 - [Chat usage](#chat-usage)
   - [Chat events](#chat-events)
   - [Chat constructor options](#chat-constructor-options)
+- [Chat notifications emitter](#chat-notifications-emitter)
+  - [Notifications emitter events](#notifications-emitter-events)
+- [Chat room tracker](#chat-room-tracker)
+  - [Room tracker events](#room-tracker-events)
 
 ## Installation
 
@@ -177,8 +181,7 @@ var notifications = chat.createNotificationsEmitter();
 var roomTracker = chat.createRoomTracker();
 // If done with it, run roomTracker.dispose();
 ```
-Documentation for usage on these are yet to be created.
-
+Read more about [NotificationsEmitter](#chat-notifications-emitter) or [RoomTracker](#chat-room-tracker) futher below.
 
 ### Chat events
 |Event|Args|Description|
@@ -214,3 +217,62 @@ Documentation for usage on these are yet to be created.
 |url|'irc.chat.twitch.tv'|The Twitch IRC URL|
 |port|6667|The Twitch IRC Port|
 |successMessages|custom array of strings|Some of the required messages for a successful connect. See [irc docs](https://dev.twitch.tv/docs/irc/guide/#connecting-to-twitch-irc) for information. Do not change unless the default is not updated for it|
+
+## Chat notifications emitter
+Chat notifications emitter is a chat wrapper that helps with handling usernotice and bits messages. The object is an event emitter.
+
+Create a notifications emitter:
+```
+var notifications = chat.createNotificationsEmitter();
+notifications.on('sub', function(channel, data) {
+  // Handle new subscription in channel
+});
+```
+
+Dispose emitter when done:
+```
+// This will remove listeners from chat object
+notifications.dispose();
+```
+
+### Notifications emitter events
+|Event|Args|Description|
+|---|---|---|
+|sub|channel, data, tags|When a new subscription happens|
+|resub|channel, data, tags|When a resubscription happens|
+|giftsub|channel, data, tags|When someone gifts another user a subscription (does not emit each from massgiftsub)|
+|massgiftsub|channel, data, tags|When someone mass gift subs to a channel. Data contains information about all recepients|
+|bits|channel, data, tags|When someone sends bit message to a channel|
+|any|event, channel, data, tags|When any of the above events happen|
+
+## Chat room tracker
+Chat room tracker is a chat wrapper that helps with handling which channels/rooms you have joined and what it's room states are. The object is an event emitter.
+
+Create a room tracker:
+```
+var roomTracker = chat.createRoomTracker();
+roomTracker.on('<event>', ...);
+```
+
+Dispose emitter when done:
+```
+// This will remove listeners from chat object
+roomTracker.dispose();
+```
+
+Print out the rooms you're in:
+```
+roomTracker.rooms.forEach(function(room) {
+  console.log('I am in channel #' + room.channel);
+  console.log('Channel state:', room.state);
+});
+```
+Notice that the room tracker will only track new ```join``` and ```part``` events.
+
+### Room tracker events
+|Event|Args|Description|
+|---|---|---|
+|join|channel|When a channel is joined|
+|part|channel|When a channel is left|
+|state|channel, state|When a channel room state has changed|
+|change|channel|When any changes has been made to any room (join, left, state)|
