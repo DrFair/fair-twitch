@@ -2,6 +2,17 @@ fair-twitch is a Twitch API and Chat bot library written in [JavaScript](http://
 
 Note: This was made for personal use, so it probably won't be supported that much. That being said, you can always submit issues and pull requests and I will look at them.
 
+## Table of contents
+
+- [Installation](#installation)
+- [Basic setup](#basic-setup)
+- [API usage](#api-usage)
+  - [API constructor options](#api-constructor-options)
+  - [API events](#api-events)
+- [Chat usage](#chat-usage)
+  - [Chat events](#chat-events)
+  - [Chat constructor options](#chat-constructor-options)
+
 ## Installation
 
 Install via npm:
@@ -81,7 +92,7 @@ api.get({
 });
 ```
 
-### API Constructor options:
+### API constructor options
 |Option|Default|Description|
 |---|---|---|
 |clientID|null|Your Twitch client ID|
@@ -94,7 +105,7 @@ api.get({
 |apiURL|'https://api.twitch.tv/'|The Twitch API base URL|
 |authURL|'https://id.twitch.tv/'|The Twitch auth base URL|
 
-### API events:
+### API events
 |Event|Args|Description|
 |---|---|---|
 |error|any|When an error happens in the other events|
@@ -192,7 +203,7 @@ Documentation for usage on these are yet to be created.
 |userstate|channel, tags|Happens when you join a channel, tags contain information about user|
 |host|channel, target, \[viewers\]|Happens when a channel hosts a target channel. Viewers is a number when started hosting, undefined if already hosting. If taget is '-', it means it stopped hosting|
 
-### Chat constructors options:
+### Chat constructor options
 |Option|Default|Description|
 |---|---|---|
 |login|null|The Twitch login.|
