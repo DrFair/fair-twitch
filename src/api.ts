@@ -343,7 +343,7 @@ class TwitchAPI extends ExpandedEventEmitter {
     const { clientID, redirectURL, authURL } = this.options;
     if (clientID === null) throw new Error('Missing clientID');
     if (redirectURL === null) throw new Error('Missing redirectURL');
-    return `${authURL}oauth2/authorize?client_id=${clientID}&redirect_uri=${redirectURL}&response_type=code&scope=${scopes.join(' ')}`;
+    return `${authURL}oauth2/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURL)}&response_type=code&scope=${encodeURIComponent(scopes.join(' '))}`;
   }
 
   /**
@@ -356,7 +356,7 @@ class TwitchAPI extends ExpandedEventEmitter {
     const { clientID, clientSecret, redirectURL, authURL } = this.options;
     this.request({
       method: 'POST',
-      url: `oauth2/token?client_id=${clientID}&client_secret=${clientSecret}&code=${authCode}&grant_type=authorization_code&redirect_uri=${redirectURL}`,
+      url: `oauth2/token?client_id=${clientID}&client_secret=${clientSecret}&code=${authCode}&grant_type=authorization_code&redirect_uri=${encodeURIComponent(redirectURL)}`,
       baseURL: authURL
     }, (err, data, res, body) => {
       if (err) return callback(err);
