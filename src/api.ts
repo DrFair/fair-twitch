@@ -123,7 +123,7 @@ class TwitchAPI extends ExpandedEventEmitter {
         }
       }
     }
-    if (this.options.validateToken) {
+    if (this.options.validateToken && (this.options.refreshToken !== null || this.options.accessToken !== null)) {
       this.validateAccessToken();
     }
   }
