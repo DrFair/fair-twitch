@@ -95,7 +95,7 @@ api.get({
   // Handle error and data
 });
 ```
-The api also contains functions like ```api.getAuthenticationURL(...scopes)``` and ```api.getRefreshToken(code, callback)``` to help with the Twitch authentication process. An example of OAuth Authorization Code Flow using express can be seen [here](examples/authexample.js).
+The api also contains functions like ```api.getAuthenticationURL(...scopes)``` and ```api.getRefreshToken(code, callback)``` to help with the Twitch authentication process. An example of [OAuth Authorization Code Flow](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#oauth-authorization-code-flow) using express can be seen [here](examples/authexample.js).
 
 
 ### API constructor options
