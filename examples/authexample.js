@@ -27,12 +27,15 @@ app.get('/', function(req, res) {
     'whispers:edit',
     'user_read'
   );
+  // It's recommended you add a state to the authURL like this:
+  // authURL += '&state=<Your generated state>';
   res.send(`<a href="${authURL}">Login with Twitch</a>`)
 });
 
 // Handle our Twitch redirect route
 app.get('/auth', function(req, res) {
   if (req.query.code) {
+    // Check for req.query.state if added here
     api.getRefreshToken(req.query.code, function(err, data) {
       if (err) res.send('Error getting refresh token');
       else res.send(`<pre>${JSON.stringify(data, null, 2)}</pre>`);
