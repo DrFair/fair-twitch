@@ -2,15 +2,20 @@
   "name": "fair-twitch",
   "version": "2.0.0",
   "description": "Fair's Twitch API and Chat bot library",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "author": "Mads Skovgaard <madsskovgaard@hotmail.com>",
   "license": "GPL-3.0",
   "scripts": {
-    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf dist",
     "test": "mocha -r ts-node/register test/**/*.test.ts",
     "test-item": "mocha -r ts-node/register"
   },
+  "files": [
+    "./dist/**/*"
+  ],
   "keywords": [
     "twitch",
     "twitchtv",
@@ -25,8 +30,13 @@
     "chat",
     "subscriber"
   ],
+  "homepage": "https://github.com/DrFair/fair-twitch#readme",
   "bugs": {
     "url": "https://github.com/DrFair/fair-twitch/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DrFair/fair-twitch.git"
   },
   "dependencies": {
     "@types/request": "^2.48.1",
