@@ -16,6 +16,7 @@ Note: This was made for personal use, so it probably won't be supported that muc
   - [Notifications emitter events](#notifications-emitter-events)
 - [Chat room tracker](#chat-room-tracker)
   - [Room tracker events](#room-tracker-events)
+- [Migrating from 1.x](#migrating-from-1x)
 
 ## Installation
 
@@ -276,3 +277,6 @@ Notice that the room tracker will only track new ```join``` and ```part``` event
 |part|channel|When a channel is left|
 |state|channel, state|When a channel room state has changed|
 |change|channel|When any changes has been made to any room (join, left, state)|
+
+## Migrating from 1.x
+The module has gone under a complete rewrite from 1.x to 2.x to work with the new Twitch api and chat. It's recommended that you either keep 1.x or rebuild your app using the new docs from this readme.
