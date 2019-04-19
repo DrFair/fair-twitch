@@ -14,7 +14,7 @@
     "test-item": "mocha -r ts-node/register"
   },
   "files": [
-    "./dist/**/*"
+    "dist/**/*"
   ],
   "keywords": [
     "twitch",
