@@ -1,9 +1,15 @@
+import path from 'path';
+import dotenv from 'dotenv';
 import TwitchIRC from '../src/chat';
+import TwitchAPI from '../src/api';
 import 'mocha';
+import { expect } from 'chai';
+import { doesNotReject } from 'assert';
 
 describe('Chat', function() {
   this.slow(1000);
   this.timeout(5000);
+  dotenv.config({ path: path.join(__dirname, '../.env.test') });
 
   describe('Create, auto connect, ready, close', () => {
     let chat: TwitchIRC;
@@ -116,6 +122,68 @@ describe('Chat', function() {
         chat.removeAllListeners();
       });
     });
+  });
+
+  describe('Authorized login', function() {
+    this.slow(2000);
+    let api: TwitchAPI;
+    let chat: TwitchIRC;
+    let twitchLogin: string;
+
+    it('API setup', () => {
+      api = new TwitchAPI({
+        clientID: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        refreshToken: process.env.REFRESH_TOKEN,
+        validateToken: false
+      });
+      api.on('error', (err) => {
+        console.log('Error testing api');
+        throw new Error(err);
+      });
+    });
+
+    it('API get accessToken', (done) => {
+      api.refreshAccessToken((err) => {
+        if (err) done(err);
+        else {
+          expect(api.options.accessToken).to.not.be.null;
+          done();
+        }
+      });
+    });
+
+    it('API validate accessToken, get login', (done) => {
+      api.validateAccessToken((err, data) => {
+        if (err) done(err);
+        else {
+          expect(data).to.have.property('login');
+          twitchLogin = data.login;
+          done();
+        }
+      });
+    });
+
+    it('Chat setup, login', (done) => {
+      chat = new TwitchIRC({
+        login: twitchLogin,
+        token: api.options.accessToken
+      });
+      chat.on('globaluserstate', (tags) => {
+        expect(tags).to.have.property('display-name');
+        expect(tags).to.have.property('user-id');
+        done();
+      });
+    });
+
+    it('Chat close', (done) => {
+      chat.close((err) => {
+        if (err) done(err);
+        else done();
+        chat.removeAllListeners();
+      });
+    });
+
   });
 
 });
