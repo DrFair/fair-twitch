@@ -15,6 +15,12 @@ interface APIOptionsParam {
   refreshToken?: string,
   /** Your access token. If you already have an access token refresh */
   accessToken?: string,
+  /** 
+   * The timestamp of when the access token expires. 
+   * Requests after this timestamp will cause a token refresh first, given that autoRefreshToken is true. 
+   * Defaults to null (will not refresh token based on expired).
+   */
+  accessTokenExpiresTS?: number,
   /** If the api should automatically refresh access token if getting an unauthorized error. Defaults to true */
   autoRefreshToken?: boolean,
   /** If should validate token on construction. Defaults to true */
@@ -31,6 +37,7 @@ interface APIOptions {
   redirectURL: string | null,
   refreshToken: string | null,
   accessToken: string | null,
+  accessTokenExpiresTS: number | null,
   autoRefreshToken: boolean,
   validateToken: boolean,
   apiURL: string,
@@ -111,6 +118,7 @@ class TwitchAPI extends ExpandedEventEmitter {
       redirectURL: null,
       refreshToken: null,
       accessToken: null,
+      accessTokenExpiresTS: null,
       autoRefreshToken: true,
       validateToken: true,
       apiURL: 'https://api.twitch.tv/',
@@ -149,6 +157,15 @@ class TwitchAPI extends ExpandedEventEmitter {
       this.emit('debug', 'Using new Twitch API Authorization');
     }
     if (accessToken !== null) {
+      // Check if access token is expired (5 seconds before)
+      if (this.options.accessTokenExpiresTS !== null && this.options.accessTokenExpiresTS - 5000 < Date.now()) {
+        this.emit('debug', 'Access token is expired, getting new');
+        this.refreshAccessToken((err) => {
+          if (err) return callback(err);
+          this._getAuthHeaders(options, callback, true);
+        });
+        return;
+      }
       if (options.accessTokenPrefix !== undefined) {
         headers['Authorization'] = `${options.accessTokenPrefix} ${accessToken}`;
       } else {
@@ -230,6 +247,7 @@ class TwitchAPI extends ExpandedEventEmitter {
         }
         if (data.access_token) {
           this.options.accessToken = data.access_token;
+          this.options.accessTokenExpiresTS = Date.now() + (data.expires_in * 1000);
           if (callback) callback(null);
           this.emit('tokenrefresh', data);
         } else {
