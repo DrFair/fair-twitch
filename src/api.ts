@@ -183,7 +183,6 @@ class TwitchAPI extends ExpandedEventEmitter {
     try {
       data = JSON.parse(body);
     } catch (e) {
-      console.log(e);
       callback({
         error: 'Invalid JSON',
         message: 'Body could not be parsed as JSON',
