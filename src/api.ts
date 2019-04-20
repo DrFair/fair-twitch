@@ -20,7 +20,7 @@ interface APIOptionsParam {
    * Requests after this timestamp will cause a token refresh first, given that autoRefreshToken is true. 
    * Defaults to null (will not refresh token based on expired).
    */
-  accessTokenExpiresTS?: number,
+  accessTokenExpireTS?: number,
   /** If the api should automatically refresh access token if getting an unauthorized error. Defaults to true */
   autoRefreshToken?: boolean,
   /** If should validate token on construction. Defaults to true */
@@ -37,7 +37,7 @@ interface APIOptions {
   redirectURL: string | null,
   refreshToken: string | null,
   accessToken: string | null,
-  accessTokenExpiresTS: number | null,
+  accessTokenExpireTS: number | null,
   autoRefreshToken: boolean,
   validateToken: boolean,
   apiURL: string,
@@ -118,7 +118,7 @@ class TwitchAPI extends ExpandedEventEmitter {
       redirectURL: null,
       refreshToken: null,
       accessToken: null,
-      accessTokenExpiresTS: null,
+      accessTokenExpireTS: null,
       autoRefreshToken: true,
       validateToken: true,
       apiURL: 'https://api.twitch.tv/',
@@ -137,7 +137,7 @@ class TwitchAPI extends ExpandedEventEmitter {
   }
 
   private _getAuthHeaders(options: RequestOptions, callback: (err: any, headers?: {}) => void, recursive?: boolean): void {
-    let { clientID, clientSecret, refreshToken, accessToken, autoRefreshToken } = this.options;
+    let { clientID, clientSecret, refreshToken, accessToken, autoRefreshToken, accessTokenExpireTS } = this.options;
     if (options.clientID !== undefined) clientID = options.clientID;
     if (options.accessToken !== undefined) accessToken = options.accessToken;
     const headers = {};
@@ -158,7 +158,7 @@ class TwitchAPI extends ExpandedEventEmitter {
     }
     if (accessToken !== null) {
       // Check if access token is expired (5 seconds before)
-      if (this.options.accessTokenExpiresTS !== null && this.options.accessTokenExpiresTS - 5000 < Date.now()) {
+      if (autoRefreshToken && accessTokenExpireTS !== null && accessTokenExpireTS - 5000 < Date.now()) {
         this.emit('debug', 'Access token is expired, getting new');
         this.refreshAccessToken((err) => {
           if (err) return callback(err);
@@ -247,7 +247,7 @@ class TwitchAPI extends ExpandedEventEmitter {
         }
         if (data.access_token) {
           this.options.accessToken = data.access_token;
-          this.options.accessTokenExpiresTS = Date.now() + (data.expires_in * 1000);
+          this.options.accessTokenExpireTS = Date.now() + (data.expires_in * 1000);
           if (callback) callback(null);
           this.emit('tokenrefresh', data);
         } else {
