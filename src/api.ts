@@ -280,7 +280,7 @@ class TwitchAPI extends ExpandedEventEmitter {
           return;
         }
         this._jsonTwitchBody(res, body, (err, data, res, body) => {
-          if (!recursive && this.options.accessToken !== null && err && err.status === 401 && err.message === 'authentication failed') {
+          if (this.options.autoRefreshToken && !recursive && this.options.accessToken !== null && err && err.status === 401 && err.message === 'authentication failed') {
             this.emit('debug', 'Unauthorized request. Clearing accessToken and trying again.');
             this.options.accessToken = null;
             this.request(options, callback, true);
