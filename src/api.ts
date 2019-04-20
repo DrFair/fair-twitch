@@ -179,18 +179,20 @@ class TwitchAPI extends ExpandedEventEmitter {
 
   private _jsonTwitchBody(res: request.Response, body: any, callback?: RequestCallback): void {
     if (!callback) return;
+    let data: any;
     try {
-      const data = JSON.parse(body);
-      if (Math.floor(res.statusCode / 100) !== 2) {
-        callback(data, null, res, body);
-      } else {
-        callback(null, data, res, body);
-      }
+      data = JSON.parse(body);
     } catch (e) {
       callback({
         error: 'Invalid JSON',
-        message: 'Body could not be parsed as JSON'
+        message: 'Body could not be parsed as JSON',
+        body: body
       }, null, res, body);
+    }
+    if (Math.floor(res.statusCode / 100) !== 2) {
+      callback(data, null, res, body);
+    } else {
+      callback(null, data, res, body);
     }
   }
 
