@@ -4,7 +4,6 @@ import TwitchIRC from '../src/chat';
 import TwitchAPI from '../src/api';
 import 'mocha';
 import { expect } from 'chai';
-import { doesNotReject } from 'assert';
 
 describe('Chat', function() {
   this.slow(1000);
