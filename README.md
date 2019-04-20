@@ -63,7 +63,14 @@ var api = new fairTwitch.api({
   accessToken: 'Account OAuth access token'
 });
 ```
-If the access token is not given, the api will automatically refresh and validate it on construction. You can find more info on constructor options further down.
+The access token will be automatically refreshed before a request if one of these conditions is met:
+- The refresh token is not null while the access token is null.
+- Retry latest request after token refresh if it emitted a 401 authentication failed response.
+- accessTokenExpireTS option is close to or less than ```Date.now()```.
+
+You can disable auto token refresh using the ```autoRefreshAccessToken``` constructor option.
+
+The api will automatically validate access token on construction, unless ```validateToken``` constructor option is false. You can find more info on constructor options further down.
 
 The API will try to figure out if the call is for Twitch new API or API v5 and change authorization header accordingly. Find calls in Twitch [New API reference](https://dev.twitch.tv/docs/api/reference/) or [API v5 reference](https://dev.twitch.tv/docs/v5/).
 
@@ -105,6 +112,7 @@ The api also contains functions like ```api.getAuthenticationURL(...scopes)``` a
 |redirectURL|null|Your Twitch OAuth redirect URL|
 |refreshToken|null|Account OAuth refresh token|
 |accessToken|null|Account OAuth access token|
+|accessTokenExpiresTS|null|The timestamp of when the access token expires. Null means never prompt a refresh using the timestamp.|
 |autoRefreshToken|true|If api should auto refresh token on authorization failed error and try again|
 |validateToken|true|If the api should validate token on construction|
 |apiURL|'https://api.twitch.tv/'|The Twitch API base URL|
