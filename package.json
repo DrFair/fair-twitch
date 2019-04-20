@@ -1,6 +1,6 @@
 {
   "name": "fair-twitch",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Fair's Twitch API and Chat bot library",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
